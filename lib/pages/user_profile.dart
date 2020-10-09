@@ -21,9 +21,10 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
+  /// Request current location and convert to LatLng object
   Future<void> _getCoordinates() async {
-  position = await getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-  curCoordinates = LatLng(position.latitude, position.longitude);
+    position = await getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    curCoordinates = LatLng(position.latitude, position.longitude);
   }
 
   @override
