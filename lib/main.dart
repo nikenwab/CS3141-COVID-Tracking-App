@@ -30,7 +30,7 @@ TextSpan textStatus() {
       TextSpan(
           text: '$statusStr',
           style: TextStyle(
-            color: Colors.red,
+            color: Colors.green,
             letterSpacing: 2,
             fontWeight: FontWeight.bold,
           )
