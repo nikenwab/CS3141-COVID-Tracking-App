@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_appmockup/main.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong/latlong.dart';
 
 class UserProfile extends StatefulWidget {
   @override
@@ -7,9 +10,7 @@ class UserProfile extends StatefulWidget {
 
 class _UserProfileState extends State<UserProfile> {
 
-  String statusStr = 'Negative';
-  bool status = false;
-
+  /// Sets status string according to status boolean
   void _checkStatus() {
     if (status == false) {
       statusStr = 'Positive';
@@ -18,6 +19,11 @@ class _UserProfileState extends State<UserProfile> {
       statusStr = 'Negative';
       status = false;
     }
+  }
+
+  Future<void> _getCoordinates() async {
+  position = await getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+  curCoordinates = LatLng(position.latitude, position.longitude);
   }
 
   @override
@@ -40,7 +46,7 @@ class _UserProfileState extends State<UserProfile> {
             ),
             SizedBox(height: 20),
             Text(
-              'Name',
+              'Name: ',
               style: TextStyle(
                 color: Colors.grey,
                 letterSpacing: 2,
@@ -49,7 +55,7 @@ class _UserProfileState extends State<UserProfile> {
             ),
             SizedBox(height: 10),
             Text(
-              'Gilligan The Parrot',
+              '$usrName',
               style: TextStyle(
                 color: Colors.blueAccent,
                 letterSpacing: 1.5,
@@ -58,24 +64,21 @@ class _UserProfileState extends State<UserProfile> {
               ),
             ),
             SizedBox(height: 30),
-            Text(
-              'Current Status',
-              style: TextStyle(
-                color: Colors.grey,
-                letterSpacing: 2,
-                fontWeight: FontWeight.bold,
+        Text.rich(
+          TextSpan(
+            children: <TextSpan>[
+              TextSpan(text: 'Current Status: ',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      letterSpacing: 2,
+                    fontWeight: FontWeight.bold,
+                  )
               ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              '$statusStr',
-              style: TextStyle(
-                color: Colors.blueAccent,
-                letterSpacing: 1.5,
-                fontSize: 35,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+              textStatus(),
+              ]
+          ),
+        ),
+            /// Change COVID status button
             SizedBox(height: 20),
             RaisedButton.icon(
               onPressed: () {
@@ -87,7 +90,7 @@ class _UserProfileState extends State<UserProfile> {
                 Icons.warning,
               ),
               label: Text(
-                'Update',
+                'Update COVID Status',
                 style: TextStyle(
                   color: Colors.black,
                   letterSpacing: 1.5,
@@ -97,6 +100,53 @@ class _UserProfileState extends State<UserProfile> {
               ),
               color: Colors.grey,
             ),
+            /// Display text for coordinates
+            SizedBox(height: 20),
+            Text.rich(
+              TextSpan(
+                  children: <TextSpan>[
+                    TextSpan(text: 'Current Coordinates: ',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        letterSpacing: 2,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(text: '[${position.latitude}, ${position.longitude}',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        letterSpacing: 2,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ]
+              ),
+            ),
+
+            /// Update Coordinates button
+            SizedBox(height: 10),
+            RaisedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _getCoordinates();
+                });
+              },
+              icon: Icon(
+                Icons.add_location,
+              ),
+              label: Text(
+                'Update Location',
+                style: TextStyle(
+                  color: Colors.black,
+                  letterSpacing: 1.5,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              color: Colors.grey,
+            ),
+            SizedBox(height: 30),
+
           ],
         ),
       ),
