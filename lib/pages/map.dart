@@ -14,21 +14,26 @@ class Map extends StatelessWidget {
       layers: [
         new TileLayerOptions(
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c']
-        ),
+            subdomains: ['a', 'b', 'c']),
         new MarkerLayerOptions(
           markers: [
             new Marker(
               width: 80.0,
               height: 80.0,
               point: curCoordinates,
-              builder: (ctx) =>
-              new Container(
+              builder: (ctx) => new Container(
                 child: new Icon(Icons.add_location),
               ),
             ),
           ],
         ),
+        new CircleLayerOptions(circles: [
+          new CircleMarker(
+            point: curCoordinates,
+            radius: 30.0,
+            color: Colors.blue,
+          )
+        ])
       ],
     );
   }
