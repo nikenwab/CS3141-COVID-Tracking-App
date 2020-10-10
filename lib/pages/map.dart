@@ -30,11 +30,39 @@ class Map extends StatelessWidget {
         new CircleLayerOptions(circles: [
           new CircleMarker(
             point: LatLng(47.106630, -88.589029),
-            radius: 30.0,
-            color: Color(0x99FF9504),
-            borderStrokeWidth: 0.5,
+            radius: 26.0,
+            color: Color(0x70FF9504),
           ),
-        ])
+          new CircleMarker(
+            point: LatLng(47.106630, -88.589029),
+            radius: 19.0,
+            color: Color(0x70FF9504),
+          ),
+        ]),
+        new CircleLayerOptions(circles: [
+          new CircleMarker(
+            point: LatLng(47.108655, -88.588764),
+            radius: 20.0,
+            color: Color(0x70ffee04),
+          ),
+          new CircleMarker(
+            point: LatLng(47.108655, -88.588764),
+            radius: 10.0,
+            color: Color(0x70ffee04),
+          ),
+        ]),
+        new CircleLayerOptions(circles: [
+          new CircleMarker(
+            point: LatLng(47.108005, -88.589118),
+            radius: 10.0,
+            color: Color(0x70ffee04),
+          ),
+          new CircleMarker(
+            point: LatLng(47.108005, -88.589118),
+            radius: 5.0,
+            color: Color(0x70ffee04),
+          ),
+        ]),
       ],
     );
   }
