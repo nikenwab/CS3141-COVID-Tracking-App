@@ -6,7 +6,6 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-
   String statusStr = 'Negative';
   bool status = false;
 
@@ -28,7 +27,6 @@ class _UserProfileState extends State<UserProfile> {
         centerTitle: true,
         backgroundColor: Colors.teal,
       ),
-
       body: Padding(
         padding: EdgeInsets.fromLTRB(30, 40, 30, 0),
         child: Column(
