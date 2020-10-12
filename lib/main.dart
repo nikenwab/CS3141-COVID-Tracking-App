@@ -5,6 +5,7 @@ import 'package:flutter_appmockup/pages/map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 
+/// Initialize Global variables
 Position position = new Position(longitude: -88.545214, latitude: 47.115992);
 LatLng curCoordinates = LatLng(47.114992, -88.545214);
 String usrName = "Gilligan the Parrot";
@@ -15,7 +16,11 @@ void main() =>  runApp(myApp());
 
 /// Returns formatted text to determine color of status description
 TextSpan textStatus() {
+
+  /// If COVID status is positive
   if (status == true) {
+
+    // Returns red formatted text
     return
       TextSpan(
         text: '$statusStr',
@@ -25,7 +30,11 @@ TextSpan textStatus() {
           fontWeight: FontWeight.bold,
         )
     );
+
+    /// If COVID status is negative
   } else {
+
+    // Returns green formatted text
     return
       TextSpan(
           text: '$statusStr',
@@ -45,6 +54,7 @@ class myApp extends StatefulWidget {
 
 class _myAppState extends State<myApp> {
 
+  /// Create list for drawer
   int index = 0;
   List<Widget> list = [
     Home(),
@@ -52,6 +62,7 @@ class _myAppState extends State<myApp> {
     Map(),
   ];
 
+  /// Format drawer
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -72,6 +83,7 @@ class _myAppState extends State<myApp> {
   }
 }
 
+/// Create drawer
 class MyDrawer extends StatelessWidget {
 
   final Function onTap;
