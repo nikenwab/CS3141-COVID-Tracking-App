@@ -39,7 +39,8 @@ class Map extends StatelessWidget {
             // Lat-long should be the same for both CircleMarkers in the layer
             point: LatLng(47.106630, -88.589029),
             // The radius of the outer circle (should be larger than inner)
-            radius: 26.0,
+            radius: 50.0,
+            useRadiusInMeter: true,
             // Each color is in the format 0xAARRGGBB
             // This allows for opacity to be changed
             // You can find appropriate color values using this tool:
@@ -51,7 +52,8 @@ class Map extends StatelessWidget {
             // Lat-long should be the same for both CircleMarkers in the layer
             point: LatLng(47.106630, -88.589029),
             // The radius of the inner circle (should be larger than outer)
-            radius: 19.0,
+            radius: 40.0,
+            useRadiusInMeter: true,
             // See color notes above
             color: Color(0x70FF9504),
           ),
@@ -62,12 +64,14 @@ class Map extends StatelessWidget {
         new CircleLayerOptions(circles: [
           new CircleMarker(
             point: LatLng(47.108655, -88.588764),
-            radius: 20.0,
+            radius: 30.0,
+            useRadiusInMeter: true,
             color: Color(0x70ffee04),
           ),
           new CircleMarker(
             point: LatLng(47.108655, -88.588764),
-            radius: 10.0,
+            radius: 20.0,
+            useRadiusInMeter: true,
             color: Color(0x70ffee04),
           ),
         ]),
@@ -77,12 +81,14 @@ class Map extends StatelessWidget {
         new CircleLayerOptions(circles: [
           new CircleMarker(
             point: LatLng(47.108005, -88.589118),
-            radius: 10.0,
+            radius: 20.0,
+            useRadiusInMeter: true,
             color: Color(0x70ffee04),
           ),
           new CircleMarker(
             point: LatLng(47.108005, -88.589118),
-            radius: 5.0,
+            radius: 10.0,
+            useRadiusInMeter: true,
             color: Color(0x70ffee04),
           ),
         ]),
