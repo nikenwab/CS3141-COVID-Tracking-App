@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_appmockup/main.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
+import 'package:flutter_appmockup/pages/map.dart';
 
 class UserProfile extends StatefulWidget {
   @override
@@ -23,7 +24,8 @@ class _UserProfileState extends State<UserProfile> {
 
   /// Request current location and convert to LatLng object
   Future<void> _getCoordinates() async {
-    position = await getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    //position = await getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    position = await Geolocator.getCurrentPosition();
     curCoordinates = LatLng(position.latitude, position.longitude);
   }
 
@@ -113,7 +115,7 @@ class _UserProfileState extends State<UserProfile> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextSpan(text: '[${position.latitude}, ${position.longitude}',
+                    TextSpan(text: '[${position.latitude}, ${position.longitude}]',
                       style: TextStyle(
                         color: Colors.grey,
                         letterSpacing: 2,
