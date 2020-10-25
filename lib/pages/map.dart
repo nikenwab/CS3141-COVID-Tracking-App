@@ -50,6 +50,8 @@ class _MapState extends State<Map> {
     }
   }
 
+  // Builds the CircleMarkers needed for the heatmap
+  // TODO - Allow for variable marker size with point aggregation
   List<CircleMarker> buildHeatmap(input) {
     // The data coming in should be formatted like this:
     // final input = [
@@ -64,6 +66,10 @@ class _MapState extends State<Map> {
     var markerNumber = 0;
 
     // Iterate through all objects in list
+    // TODO for scalability: we will need to write the backend such that it only
+    // returns a sensible number of points at a time, within some margin of the
+    // user's screen area.
+    // When the user pans outside of the area, we'll make another API call
     for (var i = 0; i < input.length; i++) {
       // Build a LatLng of the current point in the array
       final point =
