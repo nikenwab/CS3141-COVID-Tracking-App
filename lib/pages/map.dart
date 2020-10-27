@@ -2,9 +2,18 @@ import 'package:flutter_appmockup/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Map extends StatelessWidget {
+  //List of points on map
+  List<LatLng> locals = [
+    LatLng(47.106630, -88.589029),
+    LatLng(47.108655, -88.588764),
+    LatLng(47.108005, -88.589118),
+  ];
+
   Widget build(BuildContext context) {
     return new FlutterMap(
       options: new MapOptions(
@@ -29,10 +38,24 @@ class Map extends StatelessWidget {
         ),
 
         // Begin Heatmap Code
+        //Circle Marker builder
+        //Loops trhough List of LatLng and makers a circle for each one
+        //Currently No way to determine size, shade, color based on density of people in area
+        new CircleLayerOptions(circles: [
+          for (var i in locals)
+            CircleMarker(
+              point: i,
+              radius: 20.0,
+              useRadiusInMeter: true,
+              color: Color(0x70FF9504),
+            )
+        ]),
+
+        //Old hardcoded circlemarkers
 
         // Each layer has two transparent circles inside of each other
         // This creates the effect of a heatmap
-
+        /*
         // Example Layer 1: Walmart
         new CircleLayerOptions(circles: [
           new CircleMarker(
@@ -92,7 +115,7 @@ class Map extends StatelessWidget {
             color: Color(0x70ffee04),
           ),
         ]),
-
+        */
         // End heatmap code
       ],
     );
