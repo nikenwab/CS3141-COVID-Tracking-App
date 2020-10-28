@@ -38,7 +38,7 @@ class _MapState extends State<Map> {
   List<Marker> markers = [];
   //A stream controller is a class apart of the plugin that allows for reading
   //new location values and making them available for use
-  StreamController<LatLng> markerLocationStream = StreamController();
+  StreamController<LatLng> markerLocationStream = StreamController.broadcast();
 
   //Simple method to know if a callback function has been executed
   onTapFAB() {
