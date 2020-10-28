@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_appmockup/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong/latlong.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:user_location/user_location.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -15,10 +19,32 @@ class Map extends StatefulWidget {
   }
 }
 
+// Sample center position
+Position position = new Position(longitude: -88.545214, latitude: 47.115992);
+LatLng curCoordinates = LatLng(47.114992, -88.545214);
+
 class _MapState extends State<Map> {
   // Stores the JSON list of coordinates
   // TODO - figure out the right datatype
   List<dynamic> _coordList = [];
+
+  //map controller plugin
+  //This plugin allows for a mapstate implementation for specific options such
+  //as updating location for a time interval
+  MapController mapController = MapController();
+  //another plugin class that creates methods for user map options
+  UserLocationOptions userLocationOptions;
+  //List to hold marker value
+  List<Marker> markers = [];
+  //A stream controller is a class apart of the plugin that allows for reading
+  //new location values and making them available for use
+  StreamController<LatLng> markerLocationStream = StreamController();
+
+  //Simple method to know if a callback function has been executed
+  onTapFAB() {
+    print('helloworld');
+    userLocationOptions.updateMapLocationOnPositionChange = true;
+  }
 
   // The constructor for MapState will attempt to get data from backend
   _MapState() {
@@ -119,31 +145,74 @@ class _MapState extends State<Map> {
   }
 
   Widget build(BuildContext context) {
+    //Checks for changes in position
+    markerLocationStream.stream.listen((onData) {});
+    //creates an instance of location options
+    userLocationOptions = UserLocationOptions(
+        context: context,
+        //creates an instance of a map controller
+        mapController: mapController,
+        markers: markers,
+        // [
+        //   new Marker(
+        //     width: 80.0,
+        //     height: 80.0,
+        //     point: curCoordinates,
+        //     builder: (ctx) => new Container(
+        //       child: new Icon(Icons.add_location),
+        //     ),
+        //   ),
+        // ],
+        //Prints location to the console every interval
+        onLocationUpdate: (LatLng pos) =>
+            print("onLocationUpdate ${pos.toString()}"),
+        //more developer options
+        updateMapLocationOnPositionChange: false,
+        showMoveToCurrentLocationFloatingActionButton: true,
+        moveToCurrentLocationFloatingActionButton: IconButton(
+          icon: Icon(Icons.my_location),
+          onPressed: () {
+            setState(() {
+              userLocationOptions.updateMapLocationOnPositionChange = true;
+            });
+          },
+        ),
+        zoomToCurrentLocationOnLoad: true,
+        fabBottom: 50,
+        fabRight: 50,
+        verbose: false,
+        locationUpdateInBackground: true,
+        locationUpdateIntervalMs: 5000);
+    //userLocationOptions.updateMapLocationOnPositionChange = false;
+
+    //locks map to a specific location
+    //userLocationOptions.updateMapLocationOnPositionChange = true;
+
     return new FlutterMap(
       options: new MapOptions(
         center: curCoordinates,
         zoom: 15.0,
+        plugins: [UserLocationPlugin()],
       ),
       layers: [
         new TileLayerOptions(
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             subdomains: ['a', 'b', 'c']),
         new MarkerLayerOptions(
-          markers: [
-            new Marker(
-              width: 80.0,
-              height: 80.0,
-              point: curCoordinates,
-              builder: (ctx) => new Container(
-                child: new Icon(Icons.add_location),
-              ),
-            ),
-          ],
+          markers: markers,
         ),
+        userLocationOptions,
 
         // Generate all heatmap markers based on what is currently in coordList
         new CircleLayerOptions(circles: buildHeatmap(_coordList)),
       ],
+      mapController: mapController,
     );
+  }
+
+  //cleans flutter- must call super, closes listener
+  void dispose() {
+    markerLocationStream.close();
+    super.dispose();
   }
 }
