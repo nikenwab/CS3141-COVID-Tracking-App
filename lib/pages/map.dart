@@ -4,15 +4,120 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class Map extends StatelessWidget {
-  //List of points on map
-  List<LatLng> locals = [
-    LatLng(47.106630, -88.589029),
-    LatLng(47.108655, -88.588764),
-    LatLng(47.108005, -88.589118),
-  ];
+class Map extends StatefulWidget {
+  // Build the stateful widget for Map
+  // This allows for code to run asynchronously
+  @override
+  _MapState createState() {
+    return new _MapState();
+  }
+}
+
+class _MapState extends State<Map> {
+  // Stores the JSON list of coordinates
+  // TODO - figure out the right datatype
+  List<dynamic> _coordList = [];
+
+  // The constructor for MapState will attempt to get data from backend
+  _MapState() {
+    // Call function to call backend
+    getCoords()
+        .then((res) => setState(() {
+              // Update the list of coordinates based on backend call
+              _coordList = res;
+            }))
+        .catchError((err) =>
+            // TODO - figure out how to handle the error with a user popup
+            print('ERROR: Check your internet connection'));
+  }
+
+  // Calls the backend server to get the coordinate list
+  // This will ultimately have parameters for what section of map to use
+  Future<List<dynamic>> getCoords() async {
+    // Temporary server URL for development
+    final response = await http.get("http://cs3141.etekweb.net:3000");
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON and return the list
+      return json.decode(response.body);
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load album');
+    }
+  }
+
+  // Builds the CircleMarkers needed for the heatmap
+  // TODO - Allow for variable marker size with point aggregation
+  List<CircleMarker> buildHeatmap(input) {
+    // The data coming in should be formatted like this:
+    // final input = [
+    //   {"lat": 47.10663, "lng": -88.589029},
+    //   {"lat": 47.108655, "lng": -88.588764},
+    //   {"lat": 47.108005, "lng": -88.589118}
+    // ];
+
+    // Array to store the CircleMarkers
+    var markers = <CircleMarker>[];
+    // Keep track of how many markers we put in
+    var markerNumber = 0;
+
+    // Iterate through all objects in list
+    // TODO for scalability: we will need to write the backend such that it only
+    // returns a sensible number of points at a time, within some margin of the
+    // user's screen area.
+    // When the user pans outside of the area, we'll make another API call
+    for (var i = 0; i < input.length; i++) {
+      // Build a LatLng of the current point in the array
+      final point =
+          LatLng(input[i].values.elementAt(0), input[i].values.elementAt(1));
+
+      // Each layer has two transparent circle markers inside of each other
+      // This creates the effect of a heatmap
+
+      // Inner circle
+      markers.insert(
+          markerNumber, // insert at next available index
+          new CircleMarker(
+            // Lat-long should be the same for both CircleMarkers in the layer
+            point: point,
+            // The radius of the outer circle (should be larger than inner)
+            radius: 35.0,
+            useRadiusInMeter: true,
+            // Each color is in the format 0xAARRGGBB
+            // This allows for opacity to be changed
+            // You can find appropriate color values using this tool:
+            // http://peteroupc.github.io/colorpicker/demo.html
+            // Use the fourth item down on the list
+            color: Color(0x70FF9504),
+          ));
+      markerNumber++;
+      // Outer circle
+      markers.insert(
+          markerNumber,
+          new CircleMarker(
+            // Lat-long should be the same for both CircleMarkers in the layer
+            point: point,
+            // The radius of the outer circle (should be larger than inner)
+            radius: 50.0,
+            useRadiusInMeter: true,
+            // Each color is in the format 0xAARRGGBB
+            // This allows for opacity to be changed
+            // You can find appropriate color values using this tool:
+            // http://peteroupc.github.io/colorpicker/demo.html
+            // Use the fourth item down on the list
+            color: Color(0x70FF9504),
+          ));
+      markerNumber++;
+    }
+
+    // Finally, return list of markers based on number of points
+    return markers;
+  }
 
   Widget build(BuildContext context) {
     return new FlutterMap(
@@ -37,86 +142,8 @@ class Map extends StatelessWidget {
           ],
         ),
 
-        // Begin Heatmap Code
-        //Circle Marker builder
-        //Loops trhough List of LatLng and makers a circle for each one
-        //Currently No way to determine size, shade, color based on density of people in area
-        new CircleLayerOptions(circles: [
-          for (var i in locals)
-            CircleMarker(
-              point: i,
-              radius: 20.0,
-              useRadiusInMeter: true,
-              color: Color(0x70FF9504),
-            )
-        ]),
-
-        //Old hardcoded circlemarkers
-
-        // Each layer has two transparent circles inside of each other
-        // This creates the effect of a heatmap
-        /*
-        // Example Layer 1: Walmart
-        new CircleLayerOptions(circles: [
-          new CircleMarker(
-            // Lat-long should be the same for both CircleMarkers in the layer
-            point: LatLng(47.106630, -88.589029),
-            // The radius of the outer circle (should be larger than inner)
-            radius: 50.0,
-            useRadiusInMeter: true,
-            // Each color is in the format 0xAARRGGBB
-            // This allows for opacity to be changed
-            // You can find appropriate color values using this tool:
-            // http://peteroupc.github.io/colorpicker/demo.html
-            // Use the fourth item down on the list
-            color: Color(0x70FF9504),
-          ),
-          new CircleMarker(
-            // Lat-long should be the same for both CircleMarkers in the layer
-            point: LatLng(47.106630, -88.589029),
-            // The radius of the inner circle (should be larger than outer)
-            radius: 40.0,
-            useRadiusInMeter: true,
-            // See color notes above
-            color: Color(0x70FF9504),
-          ),
-        ]),
-
-        // Example Layer 2: Applebees
-        // See comments on Example Layer 1 for details
-        new CircleLayerOptions(circles: [
-          new CircleMarker(
-            point: LatLng(47.108655, -88.588764),
-            radius: 30.0,
-            useRadiusInMeter: true,
-            color: Color(0x70ffee04),
-          ),
-          new CircleMarker(
-            point: LatLng(47.108655, -88.588764),
-            radius: 20.0,
-            useRadiusInMeter: true,
-            color: Color(0x70ffee04),
-          ),
-        ]),
-
-        // Example Layer 3: Gas station
-        // See comments on Example Layer 1 for details
-        new CircleLayerOptions(circles: [
-          new CircleMarker(
-            point: LatLng(47.108005, -88.589118),
-            radius: 20.0,
-            useRadiusInMeter: true,
-            color: Color(0x70ffee04),
-          ),
-          new CircleMarker(
-            point: LatLng(47.108005, -88.589118),
-            radius: 10.0,
-            useRadiusInMeter: true,
-            color: Color(0x70ffee04),
-          ),
-        ]),
-        */
-        // End heatmap code
+        // Generate all heatmap markers based on what is currently in coordList
+        new CircleLayerOptions(circles: buildHeatmap(_coordList)),
       ],
     );
   }
