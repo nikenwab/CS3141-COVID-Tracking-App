@@ -5,8 +5,8 @@ import 'package:flutter_appmockup/pages/map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 
-Position position = new Position(longitude: -88.545214, latitude: 47.115992);
-LatLng curCoordinates = LatLng(47.114992, -88.545214);
+//Position position = new Position(longitude: -88.545214, latitude: 47.115992);
+//LatLng curCoordinates = LatLng(47.114992, -88.545214);
 String usrName = "Gilligan the Parrot";
 bool status = false;
 String statusStr = 'Negative';
@@ -62,6 +62,8 @@ class _myAppState extends State<myApp> {
         body: list[index],
         drawer: MyDrawer(onTap: (ctx, i){
           setState(() {
+            //_getCoordinates();
+            //print(position.latitude);
             index = i;
             Navigator.pop(ctx);
           });
