@@ -64,7 +64,7 @@ class _MapState extends State<Map> {
   // This will ultimately have parameters for what section of map to use
   Future<List<dynamic>> getCoords() async {
     // Temporary server URL for development
-    final response = await http.get("http://cs3141.etekweb.net:3000");
+    final response = await http.get("http://cs3141.etekweb.net:3000/coords");
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -82,9 +82,9 @@ class _MapState extends State<Map> {
   List<CircleMarker> buildHeatmap(input) {
     // The data coming in should be formatted like this:
     // final input = [
-    //   {"lat": 47.10663, "lng": -88.589029},
-    //   {"lat": 47.108655, "lng": -88.588764},
-    //   {"lat": 47.108005, "lng": -88.589118}
+    //   {"id": 0, "latitude": 47.10663, "longitude": -88.589029},
+    //   {"id": 1, "latitude": 47.108655, "longitude": -88.588764},
+    //   {"id": 2, "latitude": 47.108005, "longitude": -88.589118}
     // ];
 
     // Array to store the CircleMarkers
@@ -100,7 +100,7 @@ class _MapState extends State<Map> {
     for (var i = 0; i < input.length; i++) {
       // Build a LatLng of the current point in the array
       final point =
-          LatLng(input[i].values.elementAt(0), input[i].values.elementAt(1));
+          LatLng(input[i].values.elementAt(1), input[i].values.elementAt(2));
 
       // Each layer has two transparent circle markers inside of each other
       // This creates the effect of a heatmap
