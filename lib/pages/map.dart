@@ -4,8 +4,103 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:flutter_map_marker_popup/extension_api.dart';
+import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+Size mkrClstDynamicSize = Size(25, 25);
+
+
+
+List<Marker> markerList = [
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.119272, -88.548200),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+        child: Container(
+          width: 25.0,
+          height: 25.0,
+          color: Color(0x88ff3838),
+        )
+      ),
+    ),
+  ),
+
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.119265, -88.548078),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+            width: 25.0,
+            height: 25.0,
+            color: Color(0x88ff3838),
+          )
+      ),
+    ),
+  ),
+
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.119401, -88.547794),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+            width: 25.0,
+            height: 25.0,
+            color: Color(0x88ff3838),
+          )
+      ),
+    ),
+  ),
+
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.119178, -88.547450),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+            width: 25.0,
+            height: 25.0,
+            color: Color(0x88ff3838),
+          )
+      ),
+    ),
+  ),
+];
+
+MarkerClusterLayerOptions heatMap = (
+    new MarkerClusterLayerOptions(
+
+      maxClusterRadius: 120,
+
+      size: Size(0, 0),
+
+      markers: markerList,
+      showPolygon: false,
+
+      builder: (context, markers) {
+        return FloatingActionButton(
+          child: Text(markers.length.toString()),
+          onPressed: null,
+        );
+      },
+    )
+);
+
+/*
+void _dynamicSize(double sz) {
+  mkrClstDynamicSize = Size(15*sz, 15*sz);
+}
+*/
+
 
 class Map extends StatefulWidget {
   // Build the stateful widget for Map
@@ -124,11 +219,15 @@ class _MapState extends State<Map> {
       options: new MapOptions(
         center: curCoordinates,
         zoom: 15.0,
+        plugins:[MarkerClusterPlugin()]
       ),
       layers: [
+
         new TileLayerOptions(
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c']),
+            subdomains: ['a', 'b', 'c']
+        ),
+
         new MarkerLayerOptions(
           markers: [
             new Marker(
@@ -144,6 +243,53 @@ class _MapState extends State<Map> {
 
         // Generate all heatmap markers based on what is currently in coordList
         new CircleLayerOptions(circles: buildHeatmap(_coordList)),
+
+        // Marker Cluster Layer
+        new MarkerClusterLayerOptions(
+            maxClusterRadius: 50,
+
+            size: Size(150 ,150),
+            markers: markerList,
+
+            builder: (context, markers) {
+
+              // Floating button on marker
+              return new FloatingActionButton(
+
+                  // Disables shadows for FAB
+                  elevation: 0,
+                  disabledElevation: 0,
+                  focusElevation: 0,
+                  highlightElevation: 0,
+                  hoverElevation: 0,
+
+                  // Makes FAB transparent
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  foregroundColor: Colors.transparent,
+                  backgroundColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+
+                  // Circle clip for Container
+                  child: ClipOval (
+
+                      // Container for Heatmap Circle
+                      child: Container(
+                          color: Color(0x88ff3838),
+
+                          // Size dependent on cluster size
+                          width: 25*markers.length.toDouble(),
+                          height: 25*markers.length.toDouble(),
+                      )
+
+                  ),
+
+                // On Press action
+                onPressed: null,
+
+              );
+            }
+        ),
       ],
     );
   }
