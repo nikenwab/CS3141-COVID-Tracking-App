@@ -10,10 +10,7 @@ import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-Size mkrClstDynamicSize = Size(25, 25);
-
-
-
+// Temporary list for testing marker cluster function
 List<Marker> markerList = [
   new Marker(
     width: 25.0,
@@ -64,6 +61,51 @@ List<Marker> markerList = [
     width: 25.0,
     height: 25.0,
     point: LatLng(47.119178, -88.547450),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+            width: 25.0,
+            height: 25.0,
+            color: Color(0x88ff3838),
+          )
+      ),
+    ),
+  ),
+
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.118816, -88.546117),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+            width: 25.0,
+            height: 25.0,
+            color: Color(0x88ff3838),
+          )
+      ),
+    ),
+  ),
+
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.118619, -88.545797),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+            width: 25.0,
+            height: 25.0,
+            color: Color(0x88ff3838),
+          )
+      ),
+    ),
+  ),
+
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.118495, -88.546376),
     builder: (ctx) => new Container(
       child: new ClipOval(
           child: Container(
@@ -246,7 +288,7 @@ class _MapState extends State<Map> {
 
         // Marker Cluster Layer
         new MarkerClusterLayerOptions(
-            maxClusterRadius: 50,
+            maxClusterRadius: 25,
 
             size: Size(150 ,150),
             markers: markerList,
@@ -277,9 +319,10 @@ class _MapState extends State<Map> {
                       child: Container(
                           color: Color(0x88ff3838),
 
+
                           // Size dependent on cluster size
-                          width: 25*markers.length.toDouble(),
-                          height: 25*markers.length.toDouble(),
+                          width: (25*markers.length.toDouble())*0.75,
+                          height: (25*markers.length.toDouble())*0.75,
                       )
 
                   ),
