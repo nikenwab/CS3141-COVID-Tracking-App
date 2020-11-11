@@ -8,8 +8,106 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:user_location/user_location.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:flutter_map_marker_popup/extension_api.dart';
+import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+// Temporary list for testing marker cluster function
+List<Marker> markerList = [
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.119272, -88.548200),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
+    ),
+  ),
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.119265, -88.548078),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
+    ),
+  ),
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.119401, -88.547794),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
+    ),
+  ),
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.119178, -88.547450),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
+    ),
+  ),
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.118816, -88.546117),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
+    ),
+  ),
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.118619, -88.545797),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
+    ),
+  ),
+  new Marker(
+    width: 25.0,
+    height: 25.0,
+    point: LatLng(47.118495, -88.546376),
+    builder: (ctx) => new Container(
+      child: new ClipOval(
+          child: Container(
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
+    ),
+  ),
+];
 
 class Map extends StatefulWidget {
   // Build the stateful widget for Map
@@ -79,18 +177,13 @@ class _MapState extends State<Map> {
 
   // Builds the CircleMarkers needed for the heatmap
   // TODO - Allow for variable marker size with point aggregation
-  List<CircleMarker> buildHeatmap(input) {
+  List<Marker> buildHeatmap(input) {
     // The data coming in should be formatted like this:
     // final input = [
     //   {"id": 0, "latitude": 47.10663, "longitude": -88.589029},
     //   {"id": 1, "latitude": 47.108655, "longitude": -88.588764},
     //   {"id": 2, "latitude": 47.108005, "longitude": -88.589118}
     // ];
-
-    // Array to store the CircleMarkers
-    var markers = <CircleMarker>[];
-    // Keep track of how many markers we put in
-    var markerNumber = 0;
 
     // Iterate through all objects in list
     // TODO for scalability: we will need to write the backend such that it only
@@ -102,47 +195,22 @@ class _MapState extends State<Map> {
       final point =
           LatLng(input[i].values.elementAt(1), input[i].values.elementAt(2));
 
-      // Each layer has two transparent circle markers inside of each other
-      // This creates the effect of a heatmap
-
-      // Inner circle
-      markers.insert(
-          markerNumber, // insert at next available index
-          new CircleMarker(
-            // Lat-long should be the same for both CircleMarkers in the layer
-            point: point,
-            // The radius of the outer circle (should be larger than inner)
-            radius: 35.0,
-            useRadiusInMeter: true,
-            // Each color is in the format 0xAARRGGBB
-            // This allows for opacity to be changed
-            // You can find appropriate color values using this tool:
-            // http://peteroupc.github.io/colorpicker/demo.html
-            // Use the fourth item down on the list
-            color: Color(0x70FF9504),
-          ));
-      markerNumber++;
-      // Outer circle
-      markers.insert(
-          markerNumber,
-          new CircleMarker(
-            // Lat-long should be the same for both CircleMarkers in the layer
-            point: point,
-            // The radius of the outer circle (should be larger than inner)
-            radius: 50.0,
-            useRadiusInMeter: true,
-            // Each color is in the format 0xAARRGGBB
-            // This allows for opacity to be changed
-            // You can find appropriate color values using this tool:
-            // http://peteroupc.github.io/colorpicker/demo.html
-            // Use the fourth item down on the list
-            color: Color(0x70FF9504),
-          ));
-      markerNumber++;
+      // Adds marker to global markerList
+      markerList.add(new Marker(
+        width: 25.0,
+        height: 25.0,
+        point: point,
+        builder: (ctx) => new Container(
+          child: new ClipOval(
+              child: Container(
+            width: 25.0,
+            height: 25.0,
+            color: Color(0x88ff3838),
+          )),
+        ),
+      ));
     }
-
-    // Finally, return list of markers based on number of points
-    return markers;
+    return markerList;
   }
 
   Widget build(BuildContext context) {
@@ -193,19 +261,71 @@ class _MapState extends State<Map> {
       options: new MapOptions(
         center: curCoordinates,
         zoom: 15.0,
-        plugins: [UserLocationPlugin()],
+        plugins: [UserLocationPlugin(), MarkerClusterPlugin()],
       ),
       layers: [
+        // Load map
         new TileLayerOptions(
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             subdomains: ['a', 'b', 'c']),
+
+        // Current location point
         new MarkerLayerOptions(
           markers: markers,
         ),
         userLocationOptions,
 
-        // Generate all heatmap markers based on what is currently in coordList
-        new CircleLayerOptions(circles: buildHeatmap(_coordList)),
+        //
+        //  TEST LAYER USING MARKERLIST
+        //
+        // Marker Cluster Layer
+        new MarkerClusterLayerOptions(
+
+            // Determines cluster radius
+            maxClusterRadius: 50,
+
+            // Size needs to be larger than children
+            // so that marker can "grow" on cluster
+            size: Size(150, 150),
+
+            // Uses builder function to populate list
+            markers: buildHeatmap(_coordList),
+
+            // Disables polygon on marker tap
+            showPolygon: false,
+            builder: (context, markers) {
+              // Floating button on marker
+              return new FloatingActionButton(
+                // Disables shadows for FAB
+                elevation: 0,
+                disabledElevation: 0,
+                focusElevation: 0,
+                highlightElevation: 0,
+                hoverElevation: 0,
+
+                // Makes FAB transparent
+                focusColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                foregroundColor: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                splashColor: Colors.transparent,
+
+                // Circle clip for Container
+                child: ClipOval(
+
+                    // Container for Heatmap Circle
+                    child: Container(
+                  color: Color(0x88ff3838),
+
+                  // Size dependent on cluster size
+                  width: ((25 * markers.length.toDouble())) * 0.75,
+                  height: ((25 * markers.length.toDouble())) * 0.75,
+                )),
+
+                // On Press action
+                onPressed: null,
+              );
+            }),
       ],
       mapController: mapController,
     );

@@ -21,10 +21,11 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  flutter_map: 0.10.1
   user_location:
     git:
       url: https://github.com/igaurab/user_location_plugin.git
+  flutter_map: ^0.10.1
+  flutter_map_marker_cluster: 0.3.1
   geolocator: ^6.0.0
   flutter:
     sdk: flutter
