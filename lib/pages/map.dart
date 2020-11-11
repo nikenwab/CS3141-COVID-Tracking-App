@@ -118,32 +118,6 @@ List<Marker> markerList = [
   ),
 ];
 
-MarkerClusterLayerOptions heatMap = (
-    new MarkerClusterLayerOptions(
-
-      maxClusterRadius: 120,
-
-      size: Size(0, 0),
-
-      markers: markerList,
-      showPolygon: false,
-
-      builder: (context, markers) {
-        return FloatingActionButton(
-          child: Text(markers.length.toString()),
-          onPressed: null,
-        );
-      },
-    )
-);
-
-/*
-void _dynamicSize(double sz) {
-  mkrClstDynamicSize = Size(15*sz, 15*sz);
-}
-*/
-
-
 class Map extends StatefulWidget {
   // Build the stateful widget for Map
   // This allows for code to run asynchronously
@@ -190,18 +164,13 @@ class _MapState extends State<Map> {
 
   // Builds the CircleMarkers needed for the heatmap
   // TODO - Allow for variable marker size with point aggregation
-  List<CircleMarker> buildHeatmap(input) {
+  List<Marker> buildHeatmap(input) {
     // The data coming in should be formatted like this:
     // final input = [
     //   {"lat": 47.10663, "lng": -88.589029},
     //   {"lat": 47.108655, "lng": -88.588764},
     //   {"lat": 47.108005, "lng": -88.589118}
     // ];
-
-    // Array to store the CircleMarkers
-    var markers = <CircleMarker>[];
-    // Keep track of how many markers we put in
-    var markerNumber = 0;
 
     // Iterate through all objects in list
     // TODO for scalability: we will need to write the backend such that it only
@@ -213,47 +182,25 @@ class _MapState extends State<Map> {
       final point =
           LatLng(input[i].values.elementAt(0), input[i].values.elementAt(1));
 
-      // Each layer has two transparent circle markers inside of each other
-      // This creates the effect of a heatmap
 
-      // Inner circle
-      markers.insert(
-          markerNumber, // insert at next available index
-          new CircleMarker(
-            // Lat-long should be the same for both CircleMarkers in the layer
+      // Adds marker to global markerList
+      markerList.add(
+          new Marker(
+            width: 25.0,
+            height: 25.0,
             point: point,
-            // The radius of the outer circle (should be larger than inner)
-            radius: 35.0,
-            useRadiusInMeter: true,
-            // Each color is in the format 0xAARRGGBB
-            // This allows for opacity to be changed
-            // You can find appropriate color values using this tool:
-            // http://peteroupc.github.io/colorpicker/demo.html
-            // Use the fourth item down on the list
-            color: Color(0x70FF9504),
+            builder: (ctx) => new Container(
+              child: new ClipOval(
+                child: Container(
+                width: 25.0,
+                height: 25.0,
+                color: Color(0x88ff3838),
+                )
+              ),
+            ),
           ));
-      markerNumber++;
-      // Outer circle
-      markers.insert(
-          markerNumber,
-          new CircleMarker(
-            // Lat-long should be the same for both CircleMarkers in the layer
-            point: point,
-            // The radius of the outer circle (should be larger than inner)
-            radius: 50.0,
-            useRadiusInMeter: true,
-            // Each color is in the format 0xAARRGGBB
-            // This allows for opacity to be changed
-            // You can find appropriate color values using this tool:
-            // http://peteroupc.github.io/colorpicker/demo.html
-            // Use the fourth item down on the list
-            color: Color(0x70FF9504),
-          ));
-      markerNumber++;
     }
-
-    // Finally, return list of markers based on number of points
-    return markers;
+    return markerList;
   }
 
   Widget build(BuildContext context) {
@@ -265,11 +212,13 @@ class _MapState extends State<Map> {
       ),
       layers: [
 
+        // Load map
         new TileLayerOptions(
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             subdomains: ['a', 'b', 'c']
         ),
 
+        // Current location point
         new MarkerLayerOptions(
           markers: [
             new Marker(
@@ -283,15 +232,24 @@ class _MapState extends State<Map> {
           ],
         ),
 
-        // Generate all heatmap markers based on what is currently in coordList
-        new CircleLayerOptions(circles: buildHeatmap(_coordList)),
-
+        //
+        //  TEST LAYER USING MARKERLIST
+        //
         // Marker Cluster Layer
         new MarkerClusterLayerOptions(
-            maxClusterRadius: 25,
 
+            // Determines cluster radius
+            maxClusterRadius: 50,
+
+            // Size needs to be larger than children
+            // so that marker can "grow" on cluster
             size: Size(150 ,150),
-            markers: markerList,
+
+            // Uses builder function to populate list
+            markers: buildHeatmap(_coordList),
+
+            // Disables polygon on marker tap
+            showPolygon: false,
 
             builder: (context, markers) {
 
@@ -312,6 +270,8 @@ class _MapState extends State<Map> {
                   backgroundColor: Colors.transparent,
                   splashColor: Colors.transparent,
 
+
+
                   // Circle clip for Container
                   child: ClipOval (
 
@@ -321,8 +281,8 @@ class _MapState extends State<Map> {
 
 
                           // Size dependent on cluster size
-                          width: (25*markers.length.toDouble())*0.75,
-                          height: (25*markers.length.toDouble())*0.75,
+                          width: ((25*markers.length.toDouble()))*0.75,
+                          height: ((25*markers.length.toDouble()))*0.75,
                       )
 
                   ),
