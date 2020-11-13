@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_appmockup/main.dart';
+import 'package:hotspot_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -15,99 +15,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 // Temporary list for testing marker cluster function
-List<Marker> markerList = [
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.119272, -88.548200),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.119265, -88.548078),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.119401, -88.547794),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.119178, -88.547450),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.118816, -88.546117),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.118619, -88.545797),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.118495, -88.546376),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-];
+List<Marker> markerList = [];
 
 class Map extends StatefulWidget {
   // Build the stateful widget for Map
@@ -145,23 +53,11 @@ class _MapState extends State<Map> {
     userLocationOptions.updateMapLocationOnPositionChange = true;
   }
 
-  // The constructor for MapState will attempt to get data from backend
-  _MapState() {
-    // Call function to call backend
-    getCoords()
-        .then((res) => setState(() {
-              // Update the list of coordinates based on backend call
-              _coordList = res;
-            }))
-        .catchError((err) =>
-            // TODO - figure out how to handle the error with a user popup
-            print('ERROR: Check your internet connection'));
-  }
-
   // Calls the backend server to get the coordinate list
   // This will ultimately have parameters for what section of map to use
   Future<List<dynamic>> getCoords() async {
     // Temporary server URL for development
+    // This will be final URL: http://ba52002020.mis.sbe.mtu.edu/coords
     final response = await http.get("http://cs3141.etekweb.net:3000/coords");
 
     if (response.statusCode == 200) {
@@ -176,7 +72,6 @@ class _MapState extends State<Map> {
   }
 
   // Builds the CircleMarkers needed for the heatmap
-  // TODO - Allow for variable marker size with point aggregation
   List<Marker> buildHeatmap(input) {
     // The data coming in should be formatted like this:
     // final input = [
@@ -194,7 +89,7 @@ class _MapState extends State<Map> {
       // Build a LatLng of the current point in the array
       final point =
           LatLng(input[i].values.elementAt(1), input[i].values.elementAt(2));
-
+      // print(point);
       // Adds marker to global markerList
       markerList.add(new Marker(
         width: 25.0,
@@ -214,6 +109,17 @@ class _MapState extends State<Map> {
   }
 
   Widget build(BuildContext context) {
+    // Attempt to get coordinates from backend server / db
+    getCoords()
+        .then((res) => setState(() {
+              // Update the list of coordinates based on backend call
+              _coordList = res;
+            }))
+        .catchError((err) =>
+            // TODO - figure out how to handle the error with a user popup
+            print(
+                'ERROR: Could not reach server. Check your internet connection.'));
+
     //Checks for changes in position
     markerLocationStream.stream.listen((onData) {});
     //creates an instance of location options
