@@ -53,6 +53,10 @@ class _myAppState extends State<myApp> {
     UserProfile(),
     Map(),
     Dailychecklist(),
+    Findatestingcenter(),
+    Sanitation(),
+    XDCasestatistics(),
+    XDSymptoms()
   ];
 
   @override
@@ -159,9 +163,37 @@ class MyDrawer extends StatelessWidget {
 
             /// Opens Daily Checklist screen
             ListTile(
-              leading: Icon(Icons.home),
+              leading: Icon(Icons.check_circle_outline),
               title: Text('Daily Checklist'),
               onTap: () => onTap(context, 3),
+            ),
+
+            /// Opens Testing Center screen
+            ListTile(
+              leading: Icon(Icons.medical_services_outlined),
+              title: Text('Find a Testing Center'),
+              onTap: () => onTap(context, 4),
+            ),
+
+            /// Opens Sanitation screen
+            ListTile(
+              leading: Icon(Icons.masks_outlined),
+              title: Text('Sanitation Supplies'),
+              onTap: () => onTap(context, 5),
+            ),
+
+            /// Opens XD Case Statistics screen
+            ListTile(
+              leading: Icon(Icons.assessment_outlined),
+              title: Text('XD Case Statistics'),
+              onTap: () => onTap(context, 6),
+            ),
+
+            /// Opens XD Symptoms screen
+            ListTile(
+              leading: Icon(Icons.device_thermostat),
+              title: Text('XD Symptoms'),
+              onTap: () => onTap(context, 7),
             ),
           ],
         )));
