@@ -18,15 +18,13 @@ List<Marker> markerList = [
     point: LatLng(47.119272, -88.548200),
     builder: (ctx) => new Container(
       child: new ClipOval(
-        child: Container(
-          width: 25.0,
-          height: 25.0,
-          color: Color(0x88ff3838),
-        )
-      ),
+          child: Container(
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
     ),
   ),
-
   new Marker(
     width: 25.0,
     height: 25.0,
@@ -34,14 +32,12 @@ List<Marker> markerList = [
     builder: (ctx) => new Container(
       child: new ClipOval(
           child: Container(
-            width: 25.0,
-            height: 25.0,
-            color: Color(0x88ff3838),
-          )
-      ),
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x8832a852),
+      )),
     ),
   ),
-
   new Marker(
     width: 25.0,
     height: 25.0,
@@ -49,14 +45,12 @@ List<Marker> markerList = [
     builder: (ctx) => new Container(
       child: new ClipOval(
           child: Container(
-            width: 25.0,
-            height: 25.0,
-            color: Color(0x88ff3838),
-          )
-      ),
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
     ),
   ),
-
   new Marker(
     width: 25.0,
     height: 25.0,
@@ -64,14 +58,12 @@ List<Marker> markerList = [
     builder: (ctx) => new Container(
       child: new ClipOval(
           child: Container(
-            width: 25.0,
-            height: 25.0,
-            color: Color(0x88ff3838),
-          )
-      ),
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x8832a852),
+      )),
     ),
   ),
-
   new Marker(
     width: 25.0,
     height: 25.0,
@@ -79,14 +71,12 @@ List<Marker> markerList = [
     builder: (ctx) => new Container(
       child: new ClipOval(
           child: Container(
-            width: 25.0,
-            height: 25.0,
-            color: Color(0x88ff3838),
-          )
-      ),
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
     ),
   ),
-
   new Marker(
     width: 25.0,
     height: 25.0,
@@ -94,14 +84,12 @@ List<Marker> markerList = [
     builder: (ctx) => new Container(
       child: new ClipOval(
           child: Container(
-            width: 25.0,
-            height: 25.0,
-            color: Color(0x88ff3838),
-          )
-      ),
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x8832a852),
+      )),
     ),
   ),
-
   new Marker(
     width: 25.0,
     height: 25.0,
@@ -109,11 +97,10 @@ List<Marker> markerList = [
     builder: (ctx) => new Container(
       child: new ClipOval(
           child: Container(
-            width: 25.0,
-            height: 25.0,
-            color: Color(0x88ff3838),
-          )
-      ),
+        width: 25.0,
+        height: 25.0,
+        color: Color(0x88ff3838),
+      )),
     ),
   ),
 ];
@@ -182,23 +169,20 @@ class _MapState extends State<Map> {
       final point =
           LatLng(input[i].values.elementAt(0), input[i].values.elementAt(1));
 
-
       // Adds marker to global markerList
-      markerList.add(
-          new Marker(
+      markerList.add(new Marker(
+        width: 25.0,
+        height: 25.0,
+        point: point,
+        builder: (ctx) => new Container(
+          child: new ClipOval(
+              child: Container(
             width: 25.0,
             height: 25.0,
-            point: point,
-            builder: (ctx) => new Container(
-              child: new ClipOval(
-                child: Container(
-                width: 25.0,
-                height: 25.0,
-                color: Color(0x88ff3838),
-                )
-              ),
-            ),
-          ));
+            color: Color(0x88ff3838),
+          )),
+        ),
+      ));
     }
     return markerList;
   }
@@ -206,17 +190,12 @@ class _MapState extends State<Map> {
   Widget build(BuildContext context) {
     return new FlutterMap(
       options: new MapOptions(
-        center: curCoordinates,
-        zoom: 15.0,
-        plugins:[MarkerClusterPlugin()]
-      ),
+          center: curCoordinates, zoom: 15.0, plugins: [MarkerClusterPlugin()]),
       layers: [
-
         // Load map
         new TileLayerOptions(
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c']
-        ),
+            subdomains: ['a', 'b', 'c']),
 
         // Current location point
         new MarkerLayerOptions(
@@ -240,59 +219,56 @@ class _MapState extends State<Map> {
 
             // Determines cluster radius
             maxClusterRadius: 50,
+            disableClusteringAtZoom: 20,
 
             // Size needs to be larger than children
             // so that marker can "grow" on cluster
-            size: Size(150 ,150),
+            size: Size(150, 150),
 
             // Uses builder function to populate list
             markers: buildHeatmap(_coordList),
 
             // Disables polygon on marker tap
             showPolygon: false,
-
             builder: (context, markers) {
-
               // Floating button on marker
-              return new FloatingActionButton(
+              return new Container(
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+              );
+              /* return new FloatingActionButton(
+                // Disables shadows for FAB
+                elevation: 0,
+                disabledElevation: 0,
+                focusElevation: 0,
+                highlightElevation: 0,
+                hoverElevation: 0,
 
-                  // Disables shadows for FAB
-                  elevation: 0,
-                  disabledElevation: 0,
-                  focusElevation: 0,
-                  highlightElevation: 0,
-                  hoverElevation: 0,
+                // Makes FAB transparent
+                focusColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                foregroundColor: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                splashColor: Colors.transparent,
 
-                  // Makes FAB transparent
-                  focusColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  foregroundColor: Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                  splashColor: Colors.transparent,
+                // Circle clip for Container
+                child: ClipOval(
 
+                    // Container for Heatmap Circle
+                    child: Container(
+                  color: Color(0x88ff3838),
 
-
-                  // Circle clip for Container
-                  child: ClipOval (
-
-                      // Container for Heatmap Circle
-                      child: Container(
-                          color: Color(0x88ff3838),
-
-
-                          // Size dependent on cluster size
-                          width: ((25*markers.length.toDouble()))*0.75,
-                          height: ((25*markers.length.toDouble()))*0.75,
-                      )
-
-                  ),
+                  // Size dependent on cluster size
+                  width: ((15 * markers.length.toDouble())),
+                  height: ((15 * markers.length.toDouble())),
+                )),
 
                 // On Press action
                 onPressed: null,
-
-              );
-            }
-        ),
+              ); */
+            }),
       ],
     );
   }
