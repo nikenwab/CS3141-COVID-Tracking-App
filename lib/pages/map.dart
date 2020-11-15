@@ -53,9 +53,7 @@ class _MapState extends State<Map> {
   // Calls the backend server to get the coordinate list
   // This will ultimately have parameters for what section of map to use
   Future<List<dynamic>> getCoords() async {
-    // Temporary server URL for development
-    // This will be final URL: http://ba52002020.mis.sbe.mtu.edu/coords
-    final response = await http.get("http://cs3141.etekweb.net:3000/coords");
+    final response = await http.get("http://ba52002020.mis.sbe.mtu.edu/coords");
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
