@@ -204,8 +204,70 @@ class _MapState extends State<Map> {
         ),
         userLocationOptions,
 
+<<<<<<< Updated upstream
         // Generate all heatmap markers based on what is currently in coordList
         new CircleLayerOptions(circles: buildHeatmap(_coordList)),
+=======
+        //
+        //  TEST LAYER USING MARKERLIST
+        //
+        // Marker Cluster Layer
+        new MarkerClusterLayerOptions(
+
+            // Determines cluster radius
+            maxClusterRadius: 50,
+
+            // Size needs to be larger than children
+            // so that marker can "grow" on cluster
+            size: Size(150 ,150),
+
+            // Uses builder function to populate list
+            markers: buildHeatmap(_coordList),
+
+            // Disables polygon on marker tap
+            showPolygon: false,
+
+            builder: (context, markers) {
+
+              // Floating button on marker
+              return new FloatingActionButton(
+
+                  // Disables shadows for FAB
+                  elevation: 0,
+                  disabledElevation: 0,
+                  focusElevation: 0,
+                  highlightElevation: 0,
+                  hoverElevation: 0,
+
+                  // Makes FAB transparent
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  foregroundColor: Colors.transparent,
+                  backgroundColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+
+                  // Circle clip for Container
+                  child: ClipOval (
+
+                      // Container for Heatmap Circle
+                      child: Container(
+                          color: Color(0x88ff3838),
+
+
+                          // Size dependent on cluster size
+                          width: ((25*markers.length.toDouble()))*0.75,
+                          height: ((25*markers.length.toDouble()))*0.75,
+                      )
+
+                  ),
+
+                // On Press action
+                onPressed: null,
+
+              );
+            }
+        ),
+>>>>>>> Stashed changes
       ],
       mapController: mapController,
     );
