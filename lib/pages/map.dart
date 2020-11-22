@@ -213,6 +213,8 @@ class _MapState extends State<Map> {
         ),
         userLocationOptions,
 
+        // Generate all heatmap markers based on what is currently in coordList
+        // new CircleLayerOptions(circles: buildHeatmap(_coordList)),
         //
         //  TEST LAYER USING MARKERLIST
         //
