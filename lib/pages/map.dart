@@ -14,6 +14,8 @@ import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+bool loaded = false;
+
 class Map extends StatefulWidget {
   // Build the stateful widget for Map
   // This allows for code to run asynchronously
@@ -53,6 +55,7 @@ class _MapState extends State<Map> {
   // Calls the backend server to get the coordinate list
   // This will ultimately have parameters for what section of map to use
   Future<List<dynamic>> getCoords() async {
+    print("Getting coords...");
     final response = await http.get("http://ba52002020.mis.sbe.mtu.edu/coords");
 
     if (response.statusCode == 200) {
@@ -132,16 +135,21 @@ class _MapState extends State<Map> {
 
   Widget build(BuildContext context) {
     // Attempt to get coordinates from backend server / db
-    getCoords()
-        .then((res) => setState(() {
-              // Update the list of coordinates based on backend call
-              _coordList = res;
-            }))
-        .catchError((err) => showAlertDialog(
-            context,
-            Text('Network Error'),
-            Text(
-                'Could not retrieve points. Check your Internet connection.')));
+    if (!loaded) {
+      getCoords()
+          .then((res) => setState(() {
+                // Update the list of coordinates based on backend call
+                _coordList = res;
+              }))
+          .catchError((err) => showAlertDialog(
+              context,
+              Text('Network Error'),
+              Text(
+                  'Could not retrieve points. Check your Internet connection.')));
+      loaded = true;
+    } else {
+      print("Loaded");
+    }
 
     //Checks for changes in position
     markerLocationStream.stream.listen((onData) {});
@@ -168,9 +176,10 @@ class _MapState extends State<Map> {
         updateMapLocationOnPositionChange: false,
         showMoveToCurrentLocationFloatingActionButton: true,
         moveToCurrentLocationFloatingActionButton: IconButton(
-          icon: Icon(Icons.my_location),
+          icon: Icon(Icons.refresh),
           onPressed: () {
             setState(() {
+              loaded = false;
               userLocationOptions.updateMapLocationOnPositionChange = true;
             });
           },
