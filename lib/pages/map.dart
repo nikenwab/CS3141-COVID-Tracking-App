@@ -104,6 +104,32 @@ class _MapState extends State<Map> {
     return markerList;
   }
 
+  showAlertDialog(BuildContext context, Text title, Text message) {
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      }, // dismiss dialog
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: title,
+      content: message,
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   Widget build(BuildContext context) {
     // Attempt to get coordinates from backend server / db
     getCoords()
@@ -111,10 +137,11 @@ class _MapState extends State<Map> {
               // Update the list of coordinates based on backend call
               _coordList = res;
             }))
-        .catchError((err) =>
-            // TODO - figure out how to handle the error with a user popup
-            print(
-                'ERROR: Could not reach server. Check your internet connection.'));
+        .catchError((err) => showAlertDialog(
+            context,
+            Text('Network Error'),
+            Text(
+                'Could not retrieve points. Check your Internet connection.')));
 
     //Checks for changes in position
     markerLocationStream.stream.listen((onData) {});
