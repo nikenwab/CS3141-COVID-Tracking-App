@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_appmockup/main.dart';
+import 'package:hotspot_app/main.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
-import 'package:flutter_appmockup/pages/map.dart';
+import 'package:hotspot_app/pages/map.dart';
 
 class UserProfile extends StatefulWidget {
   @override
@@ -10,7 +10,6 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-
   /// Sets status string according to status boolean
   void _checkStatus() {
     if (status == false) {
@@ -37,7 +36,6 @@ class _UserProfileState extends State<UserProfile> {
         centerTitle: true,
         backgroundColor: Colors.teal,
       ),
-
       body: Padding(
         padding: EdgeInsets.fromLTRB(30, 40, 30, 0),
         child: Column(
@@ -67,20 +65,19 @@ class _UserProfileState extends State<UserProfile> {
               ),
             ),
             SizedBox(height: 30),
-        Text.rich(
-          TextSpan(
-            children: <TextSpan>[
-              TextSpan(text: 'Current Status: ',
-                  style: TextStyle(
+            Text.rich(
+              TextSpan(children: <TextSpan>[
+                TextSpan(
+                    text: 'Current Status: ',
+                    style: TextStyle(
                       color: Colors.grey,
                       letterSpacing: 2,
-                    fontWeight: FontWeight.bold,
-                  )
-              ),
-              textStatus(),
-              ]
-          ),
-        ),
+                      fontWeight: FontWeight.bold,
+                    )),
+                textStatus(),
+              ]),
+            ),
+
             /// Change COVID status button
             SizedBox(height: 20),
             RaisedButton.icon(
@@ -103,27 +100,28 @@ class _UserProfileState extends State<UserProfile> {
               ),
               color: Colors.grey,
             ),
+
             /// Display text for coordinates
             SizedBox(height: 20),
             Text.rich(
-              TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(text: 'Current Coordinates: ',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextSpan(text: '[${position.latitude}, ${position.longitude}]',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ]
-              ),
+              TextSpan(children: <TextSpan>[
+                TextSpan(
+                  text: 'Current Coordinates: ',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextSpan(
+                  text: '[${position.latitude}, ${position.longitude}]',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ]),
             ),
 
             /// Update Coordinates button
@@ -149,7 +147,6 @@ class _UserProfileState extends State<UserProfile> {
               color: Colors.grey,
             ),
             SizedBox(height: 30),
-
           ],
         ),
       ),

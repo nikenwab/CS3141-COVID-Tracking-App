@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_appmockup/main.dart';
+import 'package:hotspot_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
