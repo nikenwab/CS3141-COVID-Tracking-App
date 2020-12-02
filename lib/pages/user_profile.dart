@@ -25,6 +25,7 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
+  // Toggle consent status string and status boolean
   void _uploadConsentStatus(BuildContext context) {
     if (uploadConsent == false) {
       uploadConsent = true;
@@ -35,18 +36,24 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
+  // Method to prompt user to confirm consent to location upload
   void _consentProcess(BuildContext context) {
+    // Show user choice dialog
     showChoiceDialog(
         context,
         Text('Confirm'),
         Text(
             'Do you consent to location uploading? This will upload the last two weeks of location data and all location data thereafter until you revoke consent and/or change COVID status to negative.'),
         () {
+      // user agreement callback
+      // if uploadConsent was previously false, toggle status
       if (uploadConsent == false)
         setState(() {
           _uploadConsentStatus(context);
         });
     }, () {
+      // user disagreement callback
+      // if uploadConsent was previously true, toggle status
       if (uploadConsent == true)
         setState(() {
           _uploadConsentStatus(context);
@@ -213,6 +220,7 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
+  // Function to display a dialog box with yes or no button
   showChoiceDialog(BuildContext context, Text title, Text message,
       Function yesFn, Function noFn) {
     // set up the buttons
