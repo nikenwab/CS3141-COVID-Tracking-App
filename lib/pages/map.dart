@@ -1,109 +1,19 @@
-import 'package:flutter_appmockup/main.dart';
+import 'dart:async';
+
+import 'package:hotspot_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:user_location/user_location.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:flutter_map_marker_popup/extension_api.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-// Temporary list for testing marker cluster function
-List<Marker> markerList = [
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.119272, -88.548200),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.119265, -88.548078),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x8832a852),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.119401, -88.547794),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.119178, -88.547450),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x8832a852),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.118816, -88.546117),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.118619, -88.545797),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x8832a852),
-      )),
-    ),
-  ),
-  new Marker(
-    width: 25.0,
-    height: 25.0,
-    point: LatLng(47.118495, -88.546376),
-    builder: (ctx) => new Container(
-      child: new ClipOval(
-          child: Container(
-        width: 25.0,
-        height: 25.0,
-        color: Color(0x88ff3838),
-      )),
-    ),
-  ),
-];
 
 class Map extends StatefulWidget {
   // Build the stateful widget for Map
@@ -114,29 +24,38 @@ class Map extends StatefulWidget {
   }
 }
 
+// Sample center position
+Position position = new Position(longitude: -88.545214, latitude: 47.115992);
+LatLng curCoordinates = LatLng(47.114992, -88.545214);
+
 class _MapState extends State<Map> {
   // Stores the JSON list of coordinates
   // TODO - figure out the right datatype
   List<dynamic> _coordList = [];
 
-  // The constructor for MapState will attempt to get data from backend
-  _MapState() {
-    // Call function to call backend
-    getCoords()
-        .then((res) => setState(() {
-              // Update the list of coordinates based on backend call
-              _coordList = res;
-            }))
-        .catchError((err) =>
-            // TODO - figure out how to handle the error with a user popup
-            print('ERROR: Check your internet connection'));
+  //map controller plugin
+  //This plugin allows for a mapstate implementation for specific options such
+  //as updating location for a time interval
+  MapController mapController = MapController();
+  //another plugin class that creates methods for user map options
+  UserLocationOptions userLocationOptions;
+  //List to hold marker value
+  List<Marker> markers = [];
+  //A stream controller is a class apart of the plugin that allows for reading
+  //new location values and making them available for use
+  StreamController<LatLng> markerLocationStream = StreamController.broadcast();
+
+  //Simple method to know if a callback function has been executed
+  onTapFAB() {
+    print('helloworld');
+    userLocationOptions.updateMapLocationOnPositionChange = true;
   }
 
   // Calls the backend server to get the coordinate list
   // This will ultimately have parameters for what section of map to use
   Future<List<dynamic>> getCoords() async {
-    // Temporary server URL for development
-    final response = await http.get("http://cs3141.etekweb.net:3000");
+    print("Getting coords...");
+    final response = await http.get("http://ba52002020.mis.sbe.mtu.edu/coords");
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -150,14 +69,14 @@ class _MapState extends State<Map> {
   }
 
   // Builds the CircleMarkers needed for the heatmap
-  // TODO - Allow for variable marker size with point aggregation
   List<Marker> buildHeatmap(input) {
     // The data coming in should be formatted like this:
     // final input = [
-    //   {"lat": 47.10663, "lng": -88.589029},
-    //   {"lat": 47.108655, "lng": -88.588764},
-    //   {"lat": 47.108005, "lng": -88.589118}
+    //   {"id": 0, "latitude": 47.10663, "longitude": -88.589029},
+    //   {"id": 1, "latitude": 47.108655, "longitude": -88.588764},
+    //   {"id": 2, "latitude": 47.108005, "longitude": -88.589118}
     // ];
+    List<Marker> markerList = [];
 
     // Iterate through all objects in list
     // TODO for scalability: we will need to write the backend such that it only
@@ -187,7 +106,94 @@ class _MapState extends State<Map> {
     return markerList;
   }
 
+  showAlertDialog(BuildContext context, Text title, Text message) {
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      }, // dismiss dialog
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: title,
+      content: message,
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   Widget build(BuildContext context) {
+    // Attempt to get coordinates from backend server / db
+    if (!loaded) {
+      getCoords()
+          .then((res) => setState(() {
+                // Update the list of coordinates based on backend call
+                _coordList = res;
+              }))
+          .catchError((err) => showAlertDialog(
+              context,
+              Text('Network Error'),
+              Text(
+                  'Could not retrieve points. Check your Internet connection.')));
+      loaded = true;
+    } else {
+      print("Loaded");
+    }
+
+    //Checks for changes in position
+    markerLocationStream.stream.listen((onData) {});
+    //creates an instance of location options
+    userLocationOptions = UserLocationOptions(
+        context: context,
+        //creates an instance of a map controller
+        mapController: mapController,
+        markers: markers,
+        // [
+        //   new Marker(
+        //     width: 80.0,
+        //     height: 80.0,
+        //     point: curCoordinates,
+        //     builder: (ctx) => new Container(
+        //       child: new Icon(Icons.add_location),
+        //     ),
+        //   ),
+        // ],
+        //Prints location to the console every interval
+        onLocationUpdate: (LatLng pos) =>
+            print("onLocationUpdate ${pos.toString()}"),
+        //more developer options
+        updateMapLocationOnPositionChange: false,
+        showMoveToCurrentLocationFloatingActionButton: true,
+        moveToCurrentLocationFloatingActionButton: IconButton(
+          icon: Icon(Icons.refresh),
+          onPressed: () {
+            setState(() {
+              loaded = false;
+              userLocationOptions.updateMapLocationOnPositionChange = true;
+            });
+          },
+        ),
+        zoomToCurrentLocationOnLoad: true,
+        fabBottom: 50,
+        fabRight: 50,
+        verbose: false,
+        locationUpdateInBackground: true,
+        locationUpdateIntervalMs: 5000);
+    //userLocationOptions.updateMapLocationOnPositionChange = false;
+
+    //locks map to a specific location
+    //userLocationOptions.updateMapLocationOnPositionChange = true;
+
     return new FlutterMap(
       options: new MapOptions(
           center: curCoordinates, zoom: 15.0, plugins: [MarkerClusterPlugin()]),
@@ -199,18 +205,12 @@ class _MapState extends State<Map> {
 
         // Current location point
         new MarkerLayerOptions(
-          markers: [
-            new Marker(
-              width: 80.0,
-              height: 80.0,
-              point: curCoordinates,
-              builder: (ctx) => new Container(
-                child: new Icon(Icons.add_location),
-              ),
-            ),
-          ],
+          markers: markers,
         ),
+        userLocationOptions,
 
+        // Generate all heatmap markers based on what is currently in coordList
+        // new CircleLayerOptions(circles: buildHeatmap(_coordList)),
         //
         //  TEST LAYER USING MARKERLIST
         //
@@ -239,6 +239,7 @@ class _MapState extends State<Map> {
                 ),
               );
               /* return new FloatingActionButton(
+
                 // Disables shadows for FAB
                 elevation: 0,
                 disabledElevation: 0,
@@ -261,6 +262,7 @@ class _MapState extends State<Map> {
                   color: Color(0x88ff3838),
 
                   // Size dependent on cluster size
+
                   width: ((15 * markers.length.toDouble())),
                   height: ((15 * markers.length.toDouble())),
                 )),
@@ -268,8 +270,16 @@ class _MapState extends State<Map> {
                 // On Press action
                 onPressed: null,
               ); */
+
             }),
       ],
+      mapController: mapController,
     );
+  }
+
+  //cleans flutter- must call super, closes listener
+  void dispose() {
+    markerLocationStream.close();
+    super.dispose();
   }
 }
