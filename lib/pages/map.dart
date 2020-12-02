@@ -222,7 +222,7 @@ class _MapState extends State<Map> {
 
             // Determines cluster radius
             maxClusterRadius: 50,
-            disableClusteringAtZoom: 20,
+            disableClusteringAtZoom: 0,
 
             // Size needs to be larger than children
             // so that marker can "grow" on cluster
