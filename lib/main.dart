@@ -94,15 +94,18 @@ class _myAppState extends State<myApp> {
   void _timer() {
     Future.delayed(Duration(seconds: 30)).then((_) {
       _getCurrentLocation();
-      if (Location == null) {
+      if (location == null) {
         Location lo = new Location(latitude: position.latitude, longitude: position.longitude,date: DateTime.now().toString());
-        dbManager.insertLocation(lo).then((id)=>{
+        dbManager.insertLocation(lo).then((id)=>
+        {
           print("location recorded>>  ${curCoordinates.latitude}")
-        });
+        }
+        );
+
       } else {
-        // Location.latitude = position.latitude;
-        // Location.longitude = curCoordinates.longitude;
-        // Location.date = DateTime.now().toString();
+         location.latitude = curCoordinates.latitude;
+         location.longitude = curCoordinates.longitude;
+         location.date = DateTime.now().toString();
 
         dbManager.updateLocation(location).then((id) => {
           setState((){
