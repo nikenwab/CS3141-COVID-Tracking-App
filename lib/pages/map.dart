@@ -197,7 +197,9 @@ class _MapState extends State<Map> {
 
     return new FlutterMap(
       options: new MapOptions(
-          center: curCoordinates, zoom: 15.0, plugins: [MarkerClusterPlugin()]),
+          center: curCoordinates,
+          zoom: 15.0,
+          plugins: [MarkerClusterPlugin(), UserLocationPlugin()]),
       layers: [
         // Load map
         new TileLayerOptions(
