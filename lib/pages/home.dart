@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hotspot_app/DB/location.dart';
 import 'package:kumi_popup_window/kumi_popup_window.dart';
+import 'package:hotspot_app/main.dart';
 
 bool termsAccepted = true;
 
@@ -152,7 +154,31 @@ class _HomeState extends State<Home> {
             )
           )
         ),
-        _showTerms(context)
+        _showTerms(context),
+        FutureBuilder(
+          future: dbManager.getLocationList(),
+          builder: (context,snapshot){
+            if(snapshot.hasData) {
+              locationList = snapshot.data;
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: locationList == null ?0 : locationList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Location lo = locationList[index];
+                  return Card(
+                    child: Row(
+                      children: <Widget>[
+                        Text('Latitude: ${lo.latitude}'),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }
+            return new CircularProgressIndicator();
+          },
+
+        ),
       ]
     );
   }

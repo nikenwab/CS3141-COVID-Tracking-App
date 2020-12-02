@@ -1,6 +1,11 @@
 import 'dart:async';
 
+<<<<<<< Updated upstream
 import 'package:flutter_appmockup/main.dart';
+=======
+import 'package:flutter/services.dart';
+import 'package:hotspot_app/main.dart';
+>>>>>>> Stashed changes
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -29,6 +34,15 @@ class _MapState extends State<Map> {
   // TODO - figure out the right datatype
   List<dynamic> _coordList = [];
 
+  Future<Position>_getCurrentLocation() async {
+    try {
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
+  }on PlatformException catch(e){
+    position = null;
+  }
+  return position;
+  }
   //map controller plugin
   //This plugin allows for a mapstate implementation for specific options such
   //as updating location for a time interval
