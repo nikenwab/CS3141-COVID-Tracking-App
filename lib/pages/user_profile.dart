@@ -9,16 +9,49 @@ class UserProfile extends StatefulWidget {
   _UserProfileState createState() => _UserProfileState();
 }
 
+bool uploadConsent = false;
+String uploadConsentStr = "Location upload consent not provided";
+
 class _UserProfileState extends State<UserProfile> {
   /// Sets status string according to status boolean
-  void _checkStatus() {
+  void _checkStatus(BuildContext context) {
     if (status == false) {
       statusStr = 'Positive';
       status = true;
+      _consentProcess(context);
     } else {
       statusStr = 'Negative';
       status = false;
     }
+  }
+
+  void _uploadConsentStatus(BuildContext context) {
+    if (uploadConsent == false) {
+      uploadConsent = true;
+      uploadConsentStr = "Location upload consent granted";
+    } else {
+      uploadConsent = false;
+      uploadConsentStr = "Location upload consent not provided";
+    }
+  }
+
+  void _consentProcess(BuildContext context) {
+    showChoiceDialog(
+        context,
+        Text('Confirm'),
+        Text(
+            'Do you consent to location uploading? This will upload the last two weeks of location data and all location data thereafter until you revoke consent and/or change COVID status to negative.'),
+        () {
+      if (uploadConsent == false)
+        setState(() {
+          _uploadConsentStatus(context);
+        });
+    }, () {
+      if (uploadConsent == true)
+        setState(() {
+          _uploadConsentStatus(context);
+        });
+    });
   }
 
   /// Request current location and convert to LatLng object
@@ -74,7 +107,7 @@ class _UserProfileState extends State<UserProfile> {
                       letterSpacing: 2,
                       fontWeight: FontWeight.bold,
                     )),
-                textStatus(),
+                textStatus(status, statusStr),
               ]),
             ),
 
@@ -83,7 +116,7 @@ class _UserProfileState extends State<UserProfile> {
             RaisedButton.icon(
               onPressed: () {
                 setState(() {
-                  _checkStatus();
+                  _checkStatus(context);
                 });
               },
               icon: Icon(
@@ -91,6 +124,33 @@ class _UserProfileState extends State<UserProfile> {
               ),
               label: Text(
                 'Update COVID Status',
+                style: TextStyle(
+                  color: Colors.black,
+                  letterSpacing: 1.5,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              color: Colors.grey,
+            ),
+
+            // Consent Status
+            SizedBox(height: 30),
+            Text.rich(
+              textStatus(!uploadConsent, uploadConsentStr),
+            ),
+
+            /// Change Consent Status button
+            SizedBox(height: 20),
+            RaisedButton.icon(
+              onPressed: () {
+                _consentProcess(context);
+              },
+              icon: Icon(
+                Icons.upload_file,
+              ),
+              label: Text(
+                'Toggle Location Upload Consent',
                 style: TextStyle(
                   color: Colors.black,
                   letterSpacing: 1.5,
@@ -150,6 +210,43 @@ class _UserProfileState extends State<UserProfile> {
           ],
         ),
       ),
+    );
+  }
+
+  showChoiceDialog(BuildContext context, Text title, Text message,
+      Function yesFn, Function noFn) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("No, cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+        noFn();
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Yes, allow"),
+      onPressed: () {
+        Navigator.of(context).pop();
+        yesFn();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: title,
+      content: message,
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
