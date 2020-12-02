@@ -14,7 +14,6 @@ import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-bool loaded = false;
 
 class Map extends StatefulWidget {
   // Build the stateful widget for Map
@@ -87,8 +86,8 @@ class _MapState extends State<Map> {
     for (var i = 0; i < input.length; i++) {
       // Build a LatLng of the current point in the array
       final point =
-          LatLng(input[i].values.elementAt(1), input[i].values.elementAt(2));
-      // print(point);
+          LatLng(input[i].values.elementAt(0), input[i].values.elementAt(1));
+
       // Adds marker to global markerList
       markerList.add(new Marker(
         width: 25.0,
@@ -197,10 +196,7 @@ class _MapState extends State<Map> {
 
     return new FlutterMap(
       options: new MapOptions(
-        center: curCoordinates,
-        zoom: 15.0,
-        plugins: [UserLocationPlugin(), MarkerClusterPlugin()],
-      ),
+          center: curCoordinates, zoom: 15.0, plugins: [MarkerClusterPlugin()]),
       layers: [
         // Load map
         new TileLayerOptions(
@@ -223,6 +219,7 @@ class _MapState extends State<Map> {
 
             // Determines cluster radius
             maxClusterRadius: 50,
+            disableClusteringAtZoom: 20,
 
             // Size needs to be larger than children
             // so that marker can "grow" on cluster
@@ -235,7 +232,14 @@ class _MapState extends State<Map> {
             showPolygon: false,
             builder: (context, markers) {
               // Floating button on marker
-              return new FloatingActionButton(
+              return new Container(
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+              );
+              /* return new FloatingActionButton(
+
                 // Disables shadows for FAB
                 elevation: 0,
                 disabledElevation: 0,
@@ -258,13 +262,15 @@ class _MapState extends State<Map> {
                   color: Color(0x88ff3838),
 
                   // Size dependent on cluster size
-                  width: ((25 * markers.length.toDouble())) * 0.75,
-                  height: ((25 * markers.length.toDouble())) * 0.75,
+
+                  width: ((15 * markers.length.toDouble())),
+                  height: ((15 * markers.length.toDouble())),
                 )),
 
                 // On Press action
                 onPressed: null,
-              );
+              ); */
+
             }),
       ],
       mapController: mapController,
