@@ -14,6 +14,7 @@ import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+bool loaded = false;
 
 class Map extends StatefulWidget {
   // Build the stateful widget for Map
@@ -86,7 +87,7 @@ class _MapState extends State<Map> {
     for (var i = 0; i < input.length; i++) {
       // Build a LatLng of the current point in the array
       final point =
-          LatLng(input[i].values.elementAt(0), input[i].values.elementAt(1));
+          LatLng(input[i].values.elementAt(1), input[i].values.elementAt(2));
 
       // Adds marker to global markerList
       markerList.add(new Marker(
@@ -270,7 +271,6 @@ class _MapState extends State<Map> {
                 // On Press action
                 onPressed: null,
               ); */
-
             }),
       ],
       mapController: mapController,
