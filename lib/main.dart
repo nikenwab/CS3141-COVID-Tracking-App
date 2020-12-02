@@ -4,6 +4,8 @@ import 'package:hotspot_app/pages/user_profile.dart';
 import 'package:hotspot_app/pages/map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter/services.dart';
+import 'package:hotspot_app/DB/locationDB.dart';
 // BA5200 stuff
 import 'package:hotspot_app/pages/Casemap.dart';
 import 'package:hotspot_app/pages/Dailychecklist.dart';
@@ -12,11 +14,16 @@ import 'package:hotspot_app/pages/Sanitation.dart';
 import 'package:hotspot_app/pages/XDCasestatistics.dart';
 import 'package:hotspot_app/pages/XDSymptoms.dart';
 
+import 'DB/location.dart';
+
 //Position position = new Position(longitude: -88.545214, latitude: 47.115992);
 //LatLng curCoordinates = LatLng(47.114992, -88.545214);
 String usrName = "Gilligan the Parrot";
 bool status = false;
 String statusStr = 'Negative';
+final locationDB dbManager = new locationDB();
+List<Location> locationList;
+int updateIndex;
 
 void main() => runApp(myApp());
 
@@ -47,6 +54,11 @@ class myApp extends StatefulWidget {
 }
 
 class _myAppState extends State<myApp> {
+  //DB variables
+  Position position;
+  LatLng curCoordinates;
+  Location location;
+
   int index = 0;
   List<Widget> list = [
     Home(),
@@ -58,6 +70,63 @@ class _myAppState extends State<myApp> {
     XDCasestatistics(),
     XDSymptoms()
   ];
+
+  Future<Position> locateDevice() async {
+    try {
+      return await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.best);
+    }on PlatformException {
+      position = null;
+    }
+    return position;
+  }
+
+  //simply updates location
+  _getCurrentLocation() async {
+    position = await locateDevice();
+    setState(() {
+      curCoordinates = LatLng(position.latitude, position.longitude);
+    });
+    print("Location check passed");
+  }
+
+  //recursive method to store coordinates every 15 min
+  void _timer() {
+    Future.delayed(Duration(seconds: 30)).then((_) {
+      _getCurrentLocation();
+      if (Location == null) {
+        Location lo = new Location(latitude: position.latitude, longitude: position.longitude,date: DateTime.now().toString());
+        dbManager.insertLocation(lo).then((id)=>{
+          print("location recorded>>  ${curCoordinates.latitude}")
+        });
+      } else {
+        // Location.latitude = position.latitude;
+        // Location.longitude = curCoordinates.longitude;
+        // Location.date = DateTime.now().toString();
+
+        dbManager.updateLocation(location).then((id) => {
+          setState((){
+            locationList[updateIndex].latitude = curCoordinates.latitude;
+            locationList[updateIndex].longitude = curCoordinates.longitude;
+            locationList[updateIndex].date = DateTime.now().toString();
+          }),
+          location = null
+        });
+      }
+      setState(() {
+
+        print("timer check passed");
+      });
+      _timer();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+    _timer();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,28 +239,28 @@ class MyDrawer extends StatelessWidget {
 
             /// Opens Testing Center screen
             ListTile(
-              leading: Icon(Icons.medical_services_outlined),
+              leading: Icon(Icons.mail),
               title: Text('Find a Testing Center'),
               onTap: () => onTap(context, 4),
             ),
 
             /// Opens Sanitation screen
             ListTile(
-              leading: Icon(Icons.masks_outlined),
+              leading: Icon(Icons.hot_tub),
               title: Text('Sanitation Supplies'),
               onTap: () => onTap(context, 5),
             ),
 
             /// Opens XD Case Statistics screen
             ListTile(
-              leading: Icon(Icons.assessment_outlined),
+              leading: Icon(Icons.face),
               title: Text('XD Case Statistics'),
               onTap: () => onTap(context, 6),
             ),
 
             /// Opens XD Symptoms screen
             ListTile(
-              leading: Icon(Icons.device_thermostat),
+              leading: Icon(Icons.add_alarm),
               title: Text('XD Symptoms'),
               onTap: () => onTap(context, 7),
             ),
