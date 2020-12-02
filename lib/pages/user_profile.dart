@@ -3,6 +3,8 @@ import 'package:hotspot_app/main.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
 import 'package:hotspot_app/pages/map.dart';
+import 'package:hotspot_app/DB/locationDB.dart';
+import 'package:http/http.dart' as http;
 
 class UserProfile extends StatefulWidget {
   @override
@@ -45,6 +47,13 @@ class _UserProfileState extends State<UserProfile> {
         Text(
             'Do you consent to location uploading? This will upload the last two weeks of location data and all location data thereafter until you revoke consent and/or change COVID status to negative.'),
         () {
+      locationDB().getLocationList().then((data) => {
+            http
+                .post("http://ba52002020.mis.sbe.mtu.edu/coords",
+                    body: data.map((e) => e.toJson()).toString())
+                .then((res) => {print("Success: " + res.toString())})
+                .catchError((err) => {print("Error: " + err.toString())})
+          });
       // user agreement callback
       // if uploadConsent was previously false, toggle status
       if (uploadConsent == false)
