@@ -27,10 +27,10 @@ int updateIndex;
 void main() => runApp(myApp());
 
 /// Returns formatted text to determine color of status description
-TextSpan textStatus() {
-  if (status == true) {
+TextSpan textStatus(bool condition, String text) {
+  if (condition == true) {
     return TextSpan(
-        text: '$statusStr',
+        text: '$text',
         style: TextStyle(
           color: Colors.red,
           letterSpacing: 2,
@@ -38,7 +38,7 @@ TextSpan textStatus() {
         ));
   } else {
     return TextSpan(
-        text: '$statusStr',
+        text: '$text',
         style: TextStyle(
           color: Colors.green,
           letterSpacing: 2,
@@ -151,7 +151,7 @@ class _myAppState extends State<myApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Nav Bar"),
+          title: Text("HotSpot!"),
         ),
         body: list[index],
         drawer: MyDrawer(
@@ -219,7 +219,7 @@ class MyDrawer extends StatelessWidget {
                             TextSpan(
                                 text: 'Current Status: ',
                                 style: TextStyle(color: Colors.grey)),
-                            textStatus(),
+                            textStatus(status, statusStr),
                           ],
                         ),
                       )
