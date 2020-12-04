@@ -15,22 +15,22 @@ class Location{
   String date;
 
   Location({
-    @required
+    this.id,
     this.latitude,
-    @required
     this.longitude,
-    @required
-    this.date, id
+    this.date,
   });
 
   factory Location.fromJson(Map<String, dynamic> json) =>
       Location(
+        id: json["id"],
         latitude: json["latitude"],
         longitude: json["longitude"],
         date:  json["date"],
       );
 
   Map<String, dynamic> toJson() => {
+    "id": id,
     "latitude": latitude,
     "longitude": longitude,
     "date": date,

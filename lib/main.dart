@@ -16,13 +16,12 @@ import 'package:hotspot_app/pages/XDSymptoms.dart';
 
 import 'DB/location.dart';
 
-//Position position = new Position(longitude: -88.545214, latitude: 47.115992);
-//LatLng curCoordinates = LatLng(47.114992, -88.545214);
+
 String usrName = "Gilligan the Parrot";
-bool status = false;
+bool status = true;
 String statusStr = 'Negative';
 final locationDB dbManager = new locationDB();
-List<Location> locationList;
+List<Location> locationList = List<Location>();
 int updateIndex;
 
 void main() => runApp(myApp());
@@ -55,9 +54,13 @@ class myApp extends StatefulWidget {
 
 class _myAppState extends State<myApp> {
   //DB variables
+  // Position position = new Position(longitude: -88.545214, latitude: 47.115992);
+  // LatLng curCoordinates = LatLng(47.114992, -88.545214);
+  // Location location = new Location(id: 0,latitude: 47.115992, longitude: -88.545214,date: DateTime.now().toString());
   Position position;
   LatLng curCoordinates;
-  Location location;
+  Location location = Location();
+
 
   int index = 0;
   List<Widget> list = [
@@ -87,48 +90,60 @@ class _myAppState extends State<myApp> {
     setState(() {
       curCoordinates = LatLng(position.latitude, position.longitude);
     });
-    print("Location check passed");
   }
-
   //recursive method to store coordinates every 15 min
+
   void _timer() {
-    Future.delayed(Duration(seconds: 30)).then((_) {
-      _getCurrentLocation();
-      if (location == null) {
-        Location lo = new Location(latitude: position.latitude, longitude: position.longitude,date: DateTime.now().toString());
-        dbManager.insertLocation(lo).then((id)=>
-        {
-          print("location recorded>>  ${curCoordinates.latitude}")
+    Future.delayed(Duration(seconds: 5)).then((_) async{
+      if (status == true) {
+        _getCurrentLocation();
+        locationList = await dbManager.getLocationList();
+        int tempIndex = locationList.length;
+        if (updateIndex >= 3) {
+          updateIndex = 0;
         }
-        );
-
-      } else {
-         location.latitude = curCoordinates.latitude;
-         location.longitude = curCoordinates.longitude;
-         location.date = DateTime.now().toString();
-
-        dbManager.updateLocation(location).then((id) => {
-          setState((){
-            locationList[updateIndex].latitude = curCoordinates.latitude;
-            locationList[updateIndex].longitude = curCoordinates.longitude;
-            locationList[updateIndex].date = DateTime.now().toString();
-          }),
-          location = null
+        //if (status == true && locationList.length < 1344) {
+        if (tempIndex <= 2) {
+          Location lo = new Location(latitude: position.latitude,
+              longitude: position.longitude,
+              date: DateTime.now().toString());
+          setState(() {
+            location = lo;
+            locationList.add(lo);
+            print("location added>>  ${locationList[updateIndex].latitude}");
+          });
+          dbManager.insertLocation(lo).then((id) async =>
+          {
+            print("location recorded>>  ${lo.latitude}"),
+          });
+        }
+        else if (tempIndex >= 2) {
+          print(updateIndex);
+          print(await dbManager.getLocationList().toString());
+          dbManager.updateLocation(locationList[updateIndex]).then((id) =>
+          {
+            setState(() {
+              print("db updated>> ");
+              updateIndex++;
+            }),
+            location = null,
+          });
+        }
+        setState(() {
+          print("timer check passed");
         });
       }
-      setState(() {
-
-        print("timer check passed");
-      });
       _timer();
     });
   }
 
   @override
-  void initState() {
+  Future<void> initState(){
     super.initState();
+    updateIndex = 0;
     _getCurrentLocation();
     _timer();
+    print("initStateSuccess");
   }
 
   @override
