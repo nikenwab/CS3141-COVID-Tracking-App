@@ -65,6 +65,8 @@ class _myAppState extends State<myApp> {
       home: Scaffold(
         appBar: AppBar(
           title: Text("Nav Bar"),
+          backgroundColor: Color(0xFF1956B4),
+          centerTitle: true,
         ),
         body: list[index],
         drawer: MyDrawer(
