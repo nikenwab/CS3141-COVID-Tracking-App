@@ -163,7 +163,10 @@ class _DailyChecklistState extends State<Dailychecklist> {
                 createAlertDialog(context);
               }
             },
-            child: Text('Submit'),
+            child: Text(
+              'Submit',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             color: Color(0xFF1956B4),
             textColor: Color(0xFFFFFFFF),
           )
