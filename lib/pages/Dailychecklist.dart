@@ -43,6 +43,8 @@ class _DailyChecklistState extends State<Dailychecklist> {
     'Diarrhea'
   ];
 
+  var lastSubmitted = new DateTime.utc(2020, 12, 1);
+
   createAlertDialog(BuildContext context) {
     return showDialog<void>(
       context: context,
@@ -69,6 +71,34 @@ class _DailyChecklistState extends State<Dailychecklist> {
           ]
         );
     });
+  }
+
+  createResubmitDialog(BuildContext context) {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context){
+          return AlertDialog(
+              title: Text('Daily Symptom Form'),
+              content: Text(
+                'You have already submitted this form today. Please resubmit tomorrow.',
+                style: TextStyle(
+                    fontSize: 12.0
+                ),
+              ),
+              actions: <Widget> [
+                TextButton(
+                  child: Text('Okay'),
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all<Color>(Color(0xFF1956B4)),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ]
+          );
+        });
   }
 
   @override
@@ -123,7 +153,15 @@ class _DailyChecklistState extends State<Dailychecklist> {
                 for (var i = 0; i < 11; i += 1)
                   checked[i] = false;
               });
-              createAlertDialog(context);
+              var currTime = new DateTime.now();
+              if(currTime.month == lastSubmitted.month && currTime.day == lastSubmitted.day && currTime.year == lastSubmitted.year) {
+                createResubmitDialog(context);
+              } else {
+                setState(() {
+                  lastSubmitted = currTime;
+                });
+                createAlertDialog(context);
+              }
             },
             child: Text('Submit'),
             color: Color(0xFF1956B4),
