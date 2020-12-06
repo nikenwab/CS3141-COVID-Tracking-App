@@ -59,12 +59,23 @@ class _myAppState extends State<myApp> {
     XDSymptoms()
   ];
 
+  List<String> navBarText = [
+    'Home',
+    'User Profile',
+    'Map',
+    'Daily Checklist',
+    'Find a Testing Center',
+    'Sanitation Supplies',
+    'COVID Statistics',
+    'Symptoms',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Nav Bar"),
+          title: Text(navBarText[index]),
           backgroundColor: Color(0xFF1956B4),
           centerTitle: true,
         ),
@@ -152,7 +163,7 @@ class MyDrawer extends StatelessWidget {
             /// Opens Profile screen
             ListTile(
               leading: Icon(Icons.portrait),
-              title: Text('Profile'),
+              title: Text('Map'),
               onTap: () => onTap(context, 1),
             ),
 
