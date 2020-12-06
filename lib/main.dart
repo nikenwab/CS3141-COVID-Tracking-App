@@ -66,8 +66,8 @@ class _myAppState extends State<myApp> {
     'Daily Checklist',
     'Find a Testing Center',
     'Sanitation Supplies',
-    'COVID Statistics',
-    'Symptoms',
+    'Case Statistics',
+    'COVID-19 Symptoms',
   ];
 
   @override
@@ -163,7 +163,7 @@ class MyDrawer extends StatelessWidget {
             /// Opens Profile screen
             ListTile(
               leading: Icon(Icons.portrait),
-              title: Text('Map'),
+              title: Text('User Profile'),
               onTap: () => onTap(context, 1),
             ),
 
@@ -198,14 +198,14 @@ class MyDrawer extends StatelessWidget {
             /// Opens XD Case Statistics screen
             ListTile(
               leading: Icon(Icons.assessment_outlined),
-              title: Text('XD Case Statistics'),
+              title: Text('Case Statistics'),
               onTap: () => onTap(context, 6),
             ),
 
             /// Opens XD Symptoms screen
             ListTile(
               leading: Icon(Icons.device_thermostat),
-              title: Text('XD Symptoms'),
+              title: Text('COVID-19 Symptoms'),
               onTap: () => onTap(context, 7),
             ),
           ],
