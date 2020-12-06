@@ -11,6 +11,8 @@ import 'package:hotspot_app/pages/Findatestingcenter.dart';
 import 'package:hotspot_app/pages/Sanitation.dart';
 import 'package:hotspot_app/pages/XDCasestatistics.dart';
 import 'package:hotspot_app/pages/XDSymptoms.dart';
+import 'package:hotspot_app/pages/LiveChat.dart';
+import 'package:hotspot_app/pages/Login.dart';
 
 //Position position = new Position(longitude: -88.545214, latitude: 47.115992);
 //LatLng curCoordinates = LatLng(47.114992, -88.545214);
@@ -56,7 +58,9 @@ class _myAppState extends State<myApp> {
     Findatestingcenter(),
     Sanitation(),
     XDCasestatistics(),
-    XDSymptoms()
+    XDSymptoms(),
+    LiveChat(),
+    Login(),
   ];
 
   List<String> navBarText = [
@@ -68,6 +72,8 @@ class _myAppState extends State<myApp> {
     'Sanitation Supplies',
     'Case Statistics',
     'COVID-19 Symptoms',
+    'Live Chat',
+    'Login',
   ];
 
   @override
@@ -207,6 +213,20 @@ class MyDrawer extends StatelessWidget {
               leading: Icon(Icons.device_thermostat),
               title: Text('COVID-19 Symptoms'),
               onTap: () => onTap(context, 7),
+            ),
+
+            /// Opens XD Symptoms screen
+            ListTile(
+              leading: Icon(Icons.chat),
+              title: Text('Live Chat'),
+              onTap: () => onTap(context, 8),
+            ),
+
+            /// Opens XD Symptoms screen
+            ListTile(
+              leading: Icon(Icons.vpn_key),
+              title: Text('Login'),
+              onTap: () => onTap(context, 9),
             ),
           ],
         )));
