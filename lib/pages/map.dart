@@ -14,8 +14,7 @@ import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-// Temporary list for testing marker cluster function
-List<Marker> markerList = [];
+bool loaded = false;
 
 class Map extends StatefulWidget {
   // Build the stateful widget for Map
@@ -56,9 +55,8 @@ class _MapState extends State<Map> {
   // Calls the backend server to get the coordinate list
   // This will ultimately have parameters for what section of map to use
   Future<List<dynamic>> getCoords() async {
-    // Temporary server URL for development
-    // This will be final URL: http://ba52002020.mis.sbe.mtu.edu/coords
-    final response = await http.get("http://cs3141.etekweb.net:3000/coords");
+    print("Getting coords...");
+    final response = await http.get("http://ba52002020.mis.sbe.mtu.edu/coords");
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -79,6 +77,7 @@ class _MapState extends State<Map> {
     //   {"id": 1, "latitude": 47.108655, "longitude": -88.588764},
     //   {"id": 2, "latitude": 47.108005, "longitude": -88.589118}
     // ];
+    List<Marker> markerList = [];
 
     // Iterate through all objects in list
     // TODO for scalability: we will need to write the backend such that it only
@@ -89,7 +88,7 @@ class _MapState extends State<Map> {
       // Build a LatLng of the current point in the array
       final point =
           LatLng(input[i].values.elementAt(1), input[i].values.elementAt(2));
-      // print(point);
+
       // Adds marker to global markerList
       markerList.add(new Marker(
         width: 25.0,
@@ -108,17 +107,49 @@ class _MapState extends State<Map> {
     return markerList;
   }
 
+  showAlertDialog(BuildContext context, Text title, Text message) {
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      }, // dismiss dialog
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: title,
+      content: message,
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   Widget build(BuildContext context) {
     // Attempt to get coordinates from backend server / db
-    getCoords()
-        .then((res) => setState(() {
-              // Update the list of coordinates based on backend call
-              _coordList = res;
-            }))
-        .catchError((err) =>
-            // TODO - figure out how to handle the error with a user popup
-            print(
-                'ERROR: Could not reach server. Check your internet connection.'));
+    if (!loaded) {
+      getCoords()
+          .then((res) => setState(() {
+                // Update the list of coordinates based on backend call
+                _coordList = res;
+              }))
+          .catchError((err) => showAlertDialog(
+              context,
+              Text('Network Error'),
+              Text(
+                  'Could not retrieve points. Check your Internet connection.')));
+      loaded = true;
+    } else {
+      print("Loaded");
+    }
 
     //Checks for changes in position
     markerLocationStream.stream.listen((onData) {});
@@ -145,9 +176,10 @@ class _MapState extends State<Map> {
         updateMapLocationOnPositionChange: false,
         showMoveToCurrentLocationFloatingActionButton: true,
         moveToCurrentLocationFloatingActionButton: IconButton(
-          icon: Icon(Icons.my_location),
+          icon: Icon(Icons.refresh),
           onPressed: () {
             setState(() {
+              loaded = false;
               userLocationOptions.updateMapLocationOnPositionChange = true;
             });
           },
@@ -165,10 +197,9 @@ class _MapState extends State<Map> {
 
     return new FlutterMap(
       options: new MapOptions(
-        center: curCoordinates,
-        zoom: 15.0,
-        plugins: [UserLocationPlugin(), MarkerClusterPlugin()],
-      ),
+          center: curCoordinates,
+          zoom: 15.0,
+          plugins: [MarkerClusterPlugin(), UserLocationPlugin()]),
       layers: [
         // Load map
         new TileLayerOptions(
@@ -181,6 +212,8 @@ class _MapState extends State<Map> {
         ),
         userLocationOptions,
 
+        // Generate all heatmap markers based on what is currently in coordList
+        // new CircleLayerOptions(circles: buildHeatmap(_coordList)),
         //
         //  TEST LAYER USING MARKERLIST
         //
@@ -189,6 +222,7 @@ class _MapState extends State<Map> {
 
             // Determines cluster radius
             maxClusterRadius: 50,
+            disableClusteringAtZoom: 0,
 
             // Size needs to be larger than children
             // so that marker can "grow" on cluster
@@ -201,7 +235,14 @@ class _MapState extends State<Map> {
             showPolygon: false,
             builder: (context, markers) {
               // Floating button on marker
-              return new FloatingActionButton(
+              return new Container(
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+              );
+              /* return new FloatingActionButton(
+
                 // Disables shadows for FAB
                 elevation: 0,
                 disabledElevation: 0,
@@ -224,13 +265,14 @@ class _MapState extends State<Map> {
                   color: Color(0x88ff3838),
 
                   // Size dependent on cluster size
-                  width: ((25 * markers.length.toDouble())) * 0.75,
-                  height: ((25 * markers.length.toDouble())) * 0.75,
+
+                  width: ((15 * markers.length.toDouble())),
+                  height: ((15 * markers.length.toDouble())),
                 )),
 
                 // On Press action
                 onPressed: null,
-              );
+              ); */
             }),
       ],
       mapController: mapController,
