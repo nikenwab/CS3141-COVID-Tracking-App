@@ -111,8 +111,8 @@ class MyDrawer extends StatelessWidget {
     return SizedBox(
         width: MediaQuery.of(context).size.width * 0.8,
         child: Drawer(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(color: Colors.black54),
@@ -215,19 +215,19 @@ class MyDrawer extends StatelessWidget {
               onTap: () => onTap(context, 7),
             ),
 
-            /// Opens XD Symptoms screen
+            /// Opens Live Chat screen
             ListTile(
               leading: Icon(Icons.chat),
               title: Text('Live Chat'),
               onTap: () => onTap(context, 8),
             ),
 
-            /// Opens XD Symptoms screen
-            ListTile(
-              leading: Icon(Icons.vpn_key),
-              title: Text('Login'),
-              onTap: () => onTap(context, 9),
-            ),
+            // /// Opens Login screen
+            // ListTile(
+            //   leading: Icon(Icons.vpn_key),
+            //   title: Text('Login'),
+            //   onTap: () => onTap(context, 9),
+            // ),
           ],
         )));
   }

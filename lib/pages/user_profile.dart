@@ -71,19 +71,23 @@ class _UserProfileState extends State<UserProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('User Profile'),
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-      ),
       body: Padding(
         padding: EdgeInsets.fromLTRB(30, 40, 30, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            CircleAvatar(
-              backgroundImage: AssetImage('assets/frame_02_delay-0.05s.jpg'),
-              radius: 30,
+            Container(
+              width: 60.0,
+              height: 60.0,
+              alignment: Alignment.topLeft,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: new DecorationImage(
+                  image: AssetImage(
+                    'assets/frame_02_delay-0.05s.jpg',
+                  ),
+                ),
+              ),
             ),
             SizedBox(height: 20),
             Text(
