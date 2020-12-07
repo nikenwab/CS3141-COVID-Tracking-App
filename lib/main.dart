@@ -49,7 +49,7 @@ class myApp extends StatefulWidget {
 }
 
 class _myAppState extends State<myApp> {
-  int index = 0;
+  int index = 2;
   List<Widget> list = [
     Home(),
     UserProfile(),
@@ -159,12 +159,12 @@ class MyDrawer extends StatelessWidget {
               ),
             ),
 
-            /// Opens Home screen
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () => onTap(context, 0),
-            ),
+            // /// Opens Home screen
+            // ListTile(
+            //   leading: Icon(Icons.home),
+            //   title: Text('Home'),
+            //   onTap: () => onTap(context, 0),
+            // ),
 
             /// Opens Profile screen
             ListTile(
