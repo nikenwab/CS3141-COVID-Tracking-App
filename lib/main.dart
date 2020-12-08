@@ -71,7 +71,7 @@ class _myAppState extends State<myApp> {
     'Find a Testing Center',
     'Sanitation Supplies',
     'Case Statistics',
-    'COVID-19 Symptoms',
+    'Information',
     'Live Chat',
     'Login',
   ];
@@ -211,7 +211,7 @@ class MyDrawer extends StatelessWidget {
             /// Opens XD Symptoms screen
             ListTile(
               leading: Icon(Icons.device_thermostat),
-              title: Text('COVID-19 Symptoms'),
+              title: Text('COVID-19 Information'),
               onTap: () => onTap(context, 7),
             ),
 
