@@ -5,6 +5,7 @@ import 'package:latlong/latlong.dart';
 import 'package:hotspot_app/pages/map.dart';
 import 'package:hotspot_app/DB/locationDB.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class UserProfile extends StatefulWidget {
   @override
@@ -48,10 +49,17 @@ class _UserProfileState extends State<UserProfile> {
             'Do you consent to location uploading? This will upload the last two weeks of location data and all location data thereafter until you revoke consent and/or change COVID status to negative.'),
         () {
       locationDB().getLocationList().then((data) => {
+            print("SENDING: " + json.encode(data)),
             http
                 .post("http://ba52002020.mis.sbe.mtu.edu/coords",
-                    body: data.map((e) => e.toJson()).toString())
-                .then((res) => {print("Success: " + res.toString())})
+                    headers: {
+                      "accept": "application/json",
+                      "content-type": "application/json"
+                    },
+                    body: json.encode(data))
+                .then((res) => {
+                      print("Success: " + res.body),
+                    })
                 .catchError((err) => {print("Error: " + err.toString())})
           });
       // user agreement callback
@@ -157,25 +165,29 @@ class _UserProfileState extends State<UserProfile> {
             ),
 
             /// Change Consent Status button
-            SizedBox(height: 20),
-            RaisedButton.icon(
-              onPressed: () {
-                _consentProcess(context);
-              },
-              icon: Icon(
-                Icons.upload_file,
-              ),
-              label: Text(
-                'Toggle Location Upload Consent',
-                style: TextStyle(
-                  color: Colors.black,
-                  letterSpacing: 1.5,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+            if (uploadConsent) ...[
+              SizedBox(height: 20),
+              RaisedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _uploadConsentStatus(context);
+                  });
+                },
+                icon: Icon(
+                  Icons.thumb_down,
                 ),
-              ),
-              color: Colors.grey,
-            ),
+                label: Text(
+                  'Revoke Location Upload Consent',
+                  style: TextStyle(
+                    color: Colors.black,
+                    letterSpacing: 1.5,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                color: Colors.grey,
+              )
+            ],
 
             /// Display text for coordinates
             SizedBox(height: 20),
