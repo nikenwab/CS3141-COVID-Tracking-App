@@ -14,7 +14,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   MaterialButton _showTerms(BuildContext context) {
-    if (!uploadConsent) {
+    if (!termsAccepted) {
       return MaterialButton(
           height: 50,
           child: Text("View Terms of Usage"),
@@ -95,6 +95,7 @@ class _HomeState extends State<Home> {
                                     onPressed: () {
                                       setState(() {
                                         termsAccepted = true;
+                                        pop.dismiss(context);
                                       });
                                     },
                                   ),
