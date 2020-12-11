@@ -18,7 +18,12 @@ import 'DB/location.dart';
 
 String usrName = "Gilligan the Parrot";
 bool status = false;
+
+//Initialization variables
+//Temp user profiles gilligan
+//stores covid status bool
 String statusStr = 'Negative';
+//Instance of location and a temp location list
 final locationDB dbManager = new locationDB();
 List<Location> locationList = List<Location>();
 int updateIndex;
@@ -60,6 +65,9 @@ class _myAppState extends State<myApp> {
   LatLng curCoordinates;
   Location location = Location();
 
+
+//These are all of the pages that will be available to users
+
   int index = 0;
   List<Widget> list = [
     Home(),
@@ -71,7 +79,7 @@ class _myAppState extends State<myApp> {
     XDCasestatistics(),
     XDSymptoms()
   ];
-
+//Grabs the location at the current moment in time and returns a position variable
   Future<Position> locateDevice() async {
     try {
       return await Geolocator.getCurrentPosition(
@@ -90,20 +98,21 @@ class _myAppState extends State<myApp> {
     });
   }
   //recursive method to store coordinates every 15 min
-
   void _timer() {
-    Future.delayed(Duration(seconds: 5)).then((_) async {
+    Future.delayed(Duration(minutes: 15)).then((_) async{
+      //Checks that status is true
       if (status == true) {
         _getCurrentLocation();
         locationList = await dbManager.getLocationList();
         int tempIndex = locationList.length;
-        if (updateIndex >= 3) {
+        //The number of iterations in 2 weeks
+        if (updateIndex >= 1344) {
           updateIndex = 0;
         }
-        //if (status == true && locationList.length < 1344) {
-        if (tempIndex <= 2) {
-          Location lo = new Location(
-              latitude: position.latitude,
+
+        //if the data is less than 2 weeks old begin updating
+        if (tempIndex <= 1344) {
+          Location lo = new Location(latitude: position.latitude,
               longitude: position.longitude,
               date: DateTime.now().toString());
           setState(() {
@@ -111,10 +120,9 @@ class _myAppState extends State<myApp> {
             locationList.add(lo);
             print("location added>>  ${locationList[updateIndex].latitude}");
           });
-          dbManager.insertLocation(lo).then((id) async => {
-                print("location recorded>>  ${lo.latitude}"),
-              });
-        } else if (tempIndex >= 2) {
+        }
+        //if the data is more than 2 weeks old begin updating
+        else if (tempIndex >= 1344) {
           print(updateIndex);
           print(await dbManager.getLocationList().toString());
           dbManager.updateLocation(locationList[updateIndex]).then((id) => {
@@ -132,7 +140,7 @@ class _myAppState extends State<myApp> {
       _timer();
     });
   }
-
+//Initialize the app and begin recursive timer method
   @override
   Future<void> initState() {
     super.initState();
@@ -141,7 +149,7 @@ class _myAppState extends State<myApp> {
     _timer();
     print("initStateSuccess");
   }
-
+//Our build function to create a drawer with page navigation
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

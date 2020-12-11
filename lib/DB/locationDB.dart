@@ -4,10 +4,11 @@ import 'package:path/path.dart';
 import 'package:flutter/foundation.dart';
 import 'location.dart';
 
-
+//This file takes an instance of location to be stored locally on the device
+//This is our db manager that creates/updates map values
 class locationDB {
   Database _database;
-
+//Creates a location.db file if one does not already exist
   Future openDB() async {
     if(_database == null) {
       _database = await openDatabase(
@@ -19,12 +20,12 @@ class locationDB {
           });
     }
   }
-
+//Insert location method
   Future<int> insertLocation(Location location) async {
     await openDB();
     return await _database.insert('location', location.toJson());
   }
-
+//Returns location values as a list
   Future<List<Location>> getLocationList() async {
     await openDB();
     final List<Map<String, dynamic>> maps = await _database.query('location');
@@ -37,12 +38,12 @@ class locationDB {
       );
     });
   }
-
+//Updates a table index of the database
   Future<int> updateLocation(Location location) async {
     await openDB();
     return await _database.update('location', location.toJson(), where: "id = ?", whereArgs: [location.id]);
   }
-
+//Removes a location from the DB
   Future<void> deleteLocation(Location location) async {
     await openDB();
     await _database.delete(
