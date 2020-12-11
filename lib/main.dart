@@ -13,6 +13,8 @@ import 'package:hotspot_app/pages/Findatestingcenter.dart';
 import 'package:hotspot_app/pages/Sanitation.dart';
 import 'package:hotspot_app/pages/XDCasestatistics.dart';
 import 'package:hotspot_app/pages/XDSymptoms.dart';
+import 'package:hotspot_app/pages/LiveChat.dart';
+import 'package:hotspot_app/pages/Login.dart';
 
 import 'DB/location.dart';
 
@@ -65,7 +67,6 @@ class _myAppState extends State<myApp> {
   LatLng curCoordinates;
   Location location = Location();
 
-
 //These are all of the pages that will be available to users
 
   int index = 0;
@@ -77,7 +78,22 @@ class _myAppState extends State<myApp> {
     Findatestingcenter(),
     Sanitation(),
     XDCasestatistics(),
-    XDSymptoms()
+    XDSymptoms(),
+    LiveChat(),
+    Login(),
+  ];
+
+  List<String> navBarText = [
+    'Home',
+    'User Profile',
+    'Map',
+    'Daily Checklist',
+    'Find a Testing Center',
+    'Sanitation Supplies',
+    'Case Statistics',
+    'COVID-19 Symptoms',
+    'Live Chat',
+    'Login',
   ];
 //Grabs the location at the current moment in time and returns a position variable
   Future<Position> locateDevice() async {
@@ -97,9 +113,10 @@ class _myAppState extends State<myApp> {
       curCoordinates = LatLng(position.latitude, position.longitude);
     });
   }
+
   //recursive method to store coordinates every 15 min
   void _timer() {
-    Future.delayed(Duration(minutes: 15)).then((_) async{
+    Future.delayed(Duration(minutes: 15)).then((_) async {
       //Checks that status is true
       if (status == true) {
         _getCurrentLocation();
@@ -112,7 +129,8 @@ class _myAppState extends State<myApp> {
 
         //if the data is less than 2 weeks old begin updating
         if (tempIndex <= 1344) {
-          Location lo = new Location(latitude: position.latitude,
+          Location lo = new Location(
+              latitude: position.latitude,
               longitude: position.longitude,
               date: DateTime.now().toString());
           setState(() {
@@ -140,6 +158,7 @@ class _myAppState extends State<myApp> {
       _timer();
     });
   }
+
 //Initialize the app and begin recursive timer method
   @override
   Future<void> initState() {
@@ -149,13 +168,16 @@ class _myAppState extends State<myApp> {
     _timer();
     print("initStateSuccess");
   }
+
 //Our build function to create a drawer with page navigation
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("HotSpot!"),
+          title: Text(navBarText[index]),
+          backgroundColor: Color(0xFF1956B4),
+          centerTitle: true,
         ),
         body: list[index],
         drawer: MyDrawer(
@@ -241,7 +263,7 @@ class MyDrawer extends StatelessWidget {
             /// Opens Profile screen
             ListTile(
               leading: Icon(Icons.portrait),
-              title: Text('Profile'),
+              title: Text('User Profile'),
               onTap: () => onTap(context, 1),
             ),
 
@@ -275,16 +297,30 @@ class MyDrawer extends StatelessWidget {
 
             /// Opens XD Case Statistics screen
             ListTile(
-              leading: Icon(Icons.face),
-              title: Text('XD Case Statistics'),
+              leading: Icon(Icons.assessment_outlined),
+              title: Text('Case Statistics'),
               onTap: () => onTap(context, 6),
             ),
 
             /// Opens XD Symptoms screen
             ListTile(
-              leading: Icon(Icons.add_alarm),
-              title: Text('XD Symptoms'),
+              leading: Icon(Icons.device_thermostat),
+              title: Text('COVID-19 Symptoms'),
               onTap: () => onTap(context, 7),
+            ),
+
+            /// Opens XD Symptoms screen
+            ListTile(
+              leading: Icon(Icons.chat),
+              title: Text('Live Chat'),
+              onTap: () => onTap(context, 8),
+            ),
+
+            /// Opens XD Symptoms screen
+            ListTile(
+              leading: Icon(Icons.vpn_key),
+              title: Text('Login'),
+              onTap: () => onTap(context, 9),
             ),
           ],
         )));
