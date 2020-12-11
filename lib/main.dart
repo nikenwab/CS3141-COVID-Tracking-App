@@ -137,6 +137,9 @@ class _myAppState extends State<myApp> {
             location = lo;
             locationList.add(lo);
             print("location added>>  ${locationList[updateIndex].latitude}");
+            dbManager.insertLocation(lo).then((id) async => {
+                  print("location recorded>>  ${lo.latitude}"),
+                });
           });
         }
         //if the data is more than 2 weeks old begin updating
