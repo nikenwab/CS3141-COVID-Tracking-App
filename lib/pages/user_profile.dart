@@ -47,28 +47,28 @@ class _UserProfileState extends State<UserProfile> {
         Text('Confirm'),
         Text(
             'Do you consent to location uploading? This will upload the last two weeks of location data and all location data thereafter until you revoke consent and/or change COVID status to negative.'),
-            () {
-          locationDB().getLocationList().then((data) => {
+        () {
+      locationDB().getLocationList().then((data) => {
             print("SENDING: " + json.encode(data)),
             http
                 .post("http://ba52002020.mis.sbe.mtu.edu/coords",
-                headers: {
-                  "accept": "application/json",
-                  "content-type": "application/json"
-                },
-                body: json.encode(data))
+                    headers: {
+                      "accept": "application/json",
+                      "content-type": "application/json"
+                    },
+                    body: json.encode(data))
                 .then((res) => {
-              print("Success: " + res.body),
-            })
+                      print("Success: " + res.body),
+                    })
                 .catchError((err) => {print("Error: " + err.toString())})
           });
-          // user agreement callback
-          // if uploadConsent was previously false, toggle status
-          if (uploadConsent == false)
-            setState(() {
-              _uploadConsentStatus(context);
-            });
-        }, () {
+      // user agreement callback
+      // if uploadConsent was previously false, toggle status
+      if (uploadConsent == false)
+        setState(() {
+          _uploadConsentStatus(context);
+        });
+    }, () {
       // user disagreement callback
       // if uploadConsent was previously true, toggle status
       if (uploadConsent == true)
@@ -88,11 +88,6 @@ class _UserProfileState extends State<UserProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('User Profile'),
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-      ),
       body: Padding(
         padding: EdgeInsets.fromLTRB(30, 40, 30, 0),
         child: Column(
