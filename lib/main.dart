@@ -118,7 +118,7 @@ class _myAppState extends State<myApp> {
   void _timer() {
     Future.delayed(Duration(minutes: 15)).then((_) async {
       //Checks that status is true
-      if (status == false) {
+      if (termsAccepted == true) {
         _getCurrentLocation();
         locationList = await dbManager.getLocationList();
         int tempIndex = locationList.length;
