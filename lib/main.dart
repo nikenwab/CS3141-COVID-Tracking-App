@@ -4,6 +4,8 @@ import 'package:hotspot_app/pages/user_profile.dart';
 import 'package:hotspot_app/pages/map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter/services.dart';
+import 'package:hotspot_app/DB/locationDB.dart';
 // BA5200 stuff
 import 'package:hotspot_app/pages/Casemap.dart';
 import 'package:hotspot_app/pages/Dailychecklist.dart';
@@ -14,11 +16,19 @@ import 'package:hotspot_app/pages/XDSymptoms.dart';
 import 'package:hotspot_app/pages/LiveChat.dart';
 import 'package:hotspot_app/pages/Login.dart';
 
-//Position position = new Position(longitude: -88.545214, latitude: 47.115992);
-//LatLng curCoordinates = LatLng(47.114992, -88.545214);
+import 'DB/location.dart';
+
 String usrName = "Gilligan the Parrot";
 bool status = false;
+
+//Initialization variables
+//Temp user profiles gilligan
+//stores covid status bool
 String statusStr = 'Negative';
+//Instance of location and a temp location list
+final locationDB dbManager = new locationDB();
+List<Location> locationList = List<Location>();
+int updateIndex;
 
 void main() => runApp(myApp());
 
@@ -49,6 +59,16 @@ class myApp extends StatefulWidget {
 }
 
 class _myAppState extends State<myApp> {
+  //DB variables
+  // Position position = new Position(longitude: -88.545214, latitude: 47.115992);
+  // LatLng curCoordinates = LatLng(47.114992, -88.545214);
+  // Location location = new Location(id: 0,latitude: 47.115992, longitude: -88.545214,date: DateTime.now().toString());
+  Position position;
+  LatLng curCoordinates;
+  Location location = Location();
+
+//These are all of the pages that will be available to users
+
   int index = 0;
   List<Widget> list = [
     Home(),
@@ -75,7 +95,81 @@ class _myAppState extends State<myApp> {
     'Live Chat',
     'Login',
   ];
+//Grabs the location at the current moment in time and returns a position variable
+  Future<Position> locateDevice() async {
+    try {
+      return await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.best);
+    } on PlatformException {
+      position = null;
+    }
+    return position;
+  }
 
+  //simply updates location
+  _getCurrentLocation() async {
+    position = await locateDevice();
+    setState(() {
+      curCoordinates = LatLng(position.latitude, position.longitude);
+    });
+  }
+
+  //recursive method to store coordinates every 15 min
+  void _timer() {
+    Future.delayed(Duration(minutes: 15)).then((_) async {
+      //Checks that status is true
+      if (status == true) {
+        _getCurrentLocation();
+        locationList = await dbManager.getLocationList();
+        int tempIndex = locationList.length;
+        //The number of iterations in 2 weeks
+        if (updateIndex >= 1344) {
+          updateIndex = 0;
+        }
+
+        //if the data is less than 2 weeks old begin updating
+        if (tempIndex <= 1344) {
+          Location lo = new Location(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              date: DateTime.now().toString());
+          setState(() {
+            location = lo;
+            locationList.add(lo);
+            print("location added>>  ${locationList[updateIndex].latitude}");
+          });
+        }
+        //if the data is more than 2 weeks old begin updating
+        else if (tempIndex >= 1344) {
+          print(updateIndex);
+          print(await dbManager.getLocationList().toString());
+          dbManager.updateLocation(locationList[updateIndex]).then((id) => {
+                setState(() {
+                  print("db updated>> ");
+                  updateIndex++;
+                }),
+                location = null,
+              });
+        }
+        setState(() {
+          print("timer check passed");
+        });
+      }
+      _timer();
+    });
+  }
+
+//Initialize the app and begin recursive timer method
+  @override
+  Future<void> initState() {
+    super.initState();
+    updateIndex = 0;
+    _getCurrentLocation();
+    _timer();
+    print("initStateSuccess");
+  }
+
+//Our build function to create a drawer with page navigation
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -189,14 +283,14 @@ class MyDrawer extends StatelessWidget {
 
             /// Opens Testing Center screen
             ListTile(
-              leading: Icon(Icons.medical_services_outlined),
+              leading: Icon(Icons.mail),
               title: Text('Find a Testing Center'),
               onTap: () => onTap(context, 4),
             ),
 
             /// Opens Sanitation screen
             ListTile(
-              leading: Icon(Icons.masks_outlined),
+              leading: Icon(Icons.hot_tub),
               title: Text('Sanitation Supplies'),
               onTap: () => onTap(context, 5),
             ),

@@ -170,8 +170,8 @@ class _MapState extends State<Map> {
         //   ),
         // ],
         //Prints location to the console every interval
-        onLocationUpdate: (LatLng pos) =>
-            print("onLocationUpdate ${pos.toString()}"),
+        //*******************onLocationUpdate: (LatLng pos) =>
+            //***************print("onLocationUpdate ${pos.toString()}"),
         //more developer options
         updateMapLocationOnPositionChange: false,
         showMoveToCurrentLocationFloatingActionButton: true,
