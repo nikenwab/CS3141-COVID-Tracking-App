@@ -6,6 +6,8 @@ import 'package:latlong/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/services.dart';
 import 'package:hotspot_app/DB/locationDB.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 // BA5200 stuff
 import 'package:hotspot_app/pages/Casemap.dart';
 import 'package:hotspot_app/pages/Dailychecklist.dart';
@@ -140,6 +142,23 @@ class _myAppState extends State<myApp> {
             dbManager.insertLocation(lo).then((id) async => {
                   print("location recorded>>  ${lo.latitude}"),
                 });
+            // Push each new coordinate as collected if positive and consenting
+            if (status && uploadConsent) {
+              List<Location> loList = [];
+              loList.add(lo);
+              print("SENDING: " + json.encode(loList));
+              http
+                  .post("http://ba52002020.mis.sbe.mtu.edu/coords",
+                      headers: {
+                        "accept": "application/json",
+                        "content-type": "application/json"
+                      },
+                      body: json.encode(loList))
+                  .then((res) => {
+                        print("Success: " + res.body),
+                      })
+                  .catchError((err) => {print("Error: " + err.toString())});
+            }
           });
         }
         //if the data is more than 2 weeks old begin updating
